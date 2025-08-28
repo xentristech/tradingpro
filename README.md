@@ -14,6 +14,8 @@
   </a>
 </p>
 
+<strong>Repositorio:</strong> <code>tradingpro</code>
+
 Este repositorio contiene la versión v3 del sistema de trading algorítmico con integración MT5, análisis técnico, gestión de riesgo avanzada, módulos de ML y soporte para IA local (Ollama). Incluye CLI unificada, dashboards en Streamlit y múltiples scripts de operación y diagnóstico.
 
 Tecnología hecha con IA y científicos de datos por Xentris Tech.
