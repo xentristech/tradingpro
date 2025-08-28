@@ -1,0 +1,149 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+.virtualenv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment Variables - IMPORTANTE: Nunca subir estos archivos
+.env
+configs/.env
+configs/*.env
+!configs/.env.example
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+data/trading.db
+storage/trading.db
+
+# Logs
+logs/
+*.log
+*.out.log
+*.err.log
+
+# Backups
+backups/
+*.bak
+*.backup
+
+# MetaTrader
+*.ex5
+*.mqh
+*.set
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Test Coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Credentials - NUNCA subir
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Personal notes
+notes.txt
+TODO.txt
+personal/
+
+# Model files (muy pesados)
+models/
+*.gguf
+*.bin
+*.safetensors
+
+# Cache
+.cache/
+__pycache__/
+*.pyc
+
+# Node (si usas algún frontend)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Distribution
+dist/
+build/
+*.egg-info/

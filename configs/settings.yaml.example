@@ -1,0 +1,41 @@
+# =============================================
+# ALGO TRADER v3.0 - SETTINGS (EJEMPLO)
+# Copia como configs/settings.yaml y ajusta valores.
+# =============================================
+
+symbols:
+  - BTCUSDm
+
+telegram:
+  enabled: true
+  parse_mode: HTML
+
+trade_enabled: true
+min_confidence: 0.75
+
+# Gating de mercado
+RVOL_MIN: 0.8              # RVOL mínimo promedio para operar
+CMF_BUY_MIN: 0.0           # CMF mínimo para permitir COMPRA
+CMF_SELL_MAX: 0.0          # CMF máximo para permitir VENTA
+
+# Gestión de posiciones
+BREAKEVEN_TRIGGER: 0.001   # 0.1% por encima del precio de entrada
+TRAILING_DISTANCE: 0.002   # 0.2% del precio
+TRAILING_ATR_MULT: 1.5     # Mínimo de trailing basado en ATR
+
+# Reportes
+REPORT_HOUR: 23            # 23:00 hora local
+
+# Horarios y régimen de mercado
+MARKET_HOURS_START: "00:00" # HH:MM
+MARKET_HOURS_END:   "23:59"
+ALLOW_WEEKENDS: true
+VOLATILITY_MAX: 0.05       # ATR/Price máximo permitido (5%)
+ENABLE_MARKET_REGIME: true # Activar filtros de horario/volatilidad
+
+# IA / Orquestación
+ENABLE_AI_ORCHESTRATION: false
+AI_DECISION_CONFIDENCE_MIN: 0.7
+AI_MAX_ACTIONS: 1
+AI_REQUIRE_HUMAN_CONFIRMATION: false
+AI_APPROVAL_TIMEOUT_SECONDS: 60

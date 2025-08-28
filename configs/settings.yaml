@@ -1,0 +1,40 @@
+symbols:
+  - BTCUSD
+  - ETHUSD
+  - EURUSD
+  - GBPUSD
+  - USDJPY
+
+telegram:
+  enabled: true
+  parse_mode: HTML
+
+trade_enabled: true
+min_confidence: 0.75
+
+# Gating de mercado
+RVOL_MIN: 1.0
+CMF_BUY_MIN: 0.0
+CMF_SELL_MAX: 0.0
+
+# Gestión de posiciones
+BREAKEVEN_TRIGGER: 0.001     # 0.1%
+TRAILING_DISTANCE: 0.002     # 0.2%
+TRAILING_ATR_MULT: 1.5
+
+# Reportes
+REPORT_HOUR: 23              # 23:00 hora local
+
+# Horarios y régimen de mercado
+MARKET_HOURS_START: "06:00"  # formato HH:MM
+MARKET_HOURS_END:   "20:00"
+ALLOW_WEEKENDS: false
+VOLATILITY_MAX: 0.05         # ATR/Price máximo permitido (5%)
+ENABLE_MARKET_REGIME: true   # Activar filtros de horario/volatilidad
+
+# IA / Orquestación
+ENABLE_AI_ORCHESTRATION: true
+AI_DECISION_CONFIDENCE_MIN: 0.80
+AI_MAX_ACTIONS: 1
+AI_REQUIRE_HUMAN_CONFIRMATION: true
+AI_APPROVAL_TIMEOUT_SECONDS: 60
