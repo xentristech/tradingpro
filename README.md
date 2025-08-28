@@ -12,6 +12,14 @@
   <a href="https://xentris.tech/" target="_blank">
     <img alt="Xentris Tech" src="https://img.shields.io/badge/Xentris%20Tech-0EA5A4?labelColor=1f1f1f" />
   </a>
+  &nbsp;
+  <a href="https://github.com/xentristech/tradingpro/actions/workflows/lint.yml" target="_blank">
+    <img alt="CI Status" src="https://github.com/xentristech/tradingpro/actions/workflows/lint.yml/badge.svg" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/xentristech/tradingpro/actions/workflows/quality.yml" target="_blank">
+    <img alt="Quality Status" src="https://github.com/xentristech/tradingpro/actions/workflows/quality.yml/badge.svg" />
+  </a>
 </p>
 
 <strong>Repositorio:</strong> <code>tradingpro</code>
