@@ -1,4 +1,15 @@
-# Python
+# ============================================
+# ALGO TRADER V3 - GITIGNORE
+# ============================================
+
+# Archivos de configuración con credenciales
+.env
+.env.local
+.env.production
+*.env
+!.env.example
+
+# Directorios de Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -16,17 +27,15 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual Environment
-.venv/
 venv/
 ENV/
 env/
+.venv/
 .virtualenv/
 
 # IDE
@@ -36,114 +45,128 @@ env/
 *.swo
 *~
 .DS_Store
-
-# Environment Variables - IMPORTANTE: Nunca subir estos archivos
-.env
-configs/.env
-configs/*.env
-!configs/.env.example
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-data/trading.db
-storage/trading.db
+Thumbs.db
 
 # Logs
 logs/
 *.log
-*.out.log
-*.err.log
+*.log.*
+log.txt
 
-# Backups
+# Datos y backups
+data/*.csv
+data/*.json
 backups/
+deprecated/
 *.bak
 *.backup
+*.old
 
-# MetaTrader
-*.ex5
-*.mqh
-*.set
+# Archivos de trading
+positions.json
+trades.json
+orders.json
+*.pickle
+*.pkl
+
+# Modelos de ML
+models/*.h5
+models/*.pkl
+models/*.joblib
+models/*.pth
+models/*.onnx
+
+# Bases de datos
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos temporales
+tmp/
+temp/
+*.tmp
+*.temp
+.cache/
+
+# Reportes y outputs
+reports/
+output/
+results/
+*.html
+*.pdf
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos de test
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
 *.ipynb
 
-# Test Coverage
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+# Configuración local
+config/local/
+config/*.local.*
 
-# Documentation
-docs/_build/
-docs/_static/
-docs/_templates/
-
-# Package files
-*.jar
-*.war
-*.nar
-*.ear
+# Archivos grandes
 *.zip
-*.tar.gz
+*.tar
+*.gz
 *.rar
+*.7z
 
-# Temporary files
-*.tmp
-*.temp
-tmp/
-temp/
+# MetaTrader
+*.ex5
+*.mq5
+*.mqh
 
-# OS files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-
-# Credentials - NUNCA subir
+# Certificados y claves
 *.pem
 *.key
-*.cert
 *.crt
-*.p12
+*.cer
 *.pfx
-secrets/
-credentials/
+*.p12
 
-# Personal notes
-notes.txt
-TODO.txt
-personal/
+# Archivos de sesión
+session.json
+cookies.txt
+*.session
 
-# Model files (muy pesados)
-models/
-*.gguf
-*.bin
-*.safetensors
+# Carpeta de descargas
+downloads/
 
-# Cache
-.cache/
-__pycache__/
-*.pyc
+# Archivos específicos del proyecto
+REORGANIZATION_REPORT.txt
+system_check_report.json
+mt5_scraped_documentation.json
 
-# Node (si usas algún frontend)
+# Node modules (si se usan)
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+package-lock.json
+yarn.lock
 
-# Distribution
-dist/
-build/
-*.egg-info/
+# Archivos de configuración del editor
+.editorconfig
+.prettierrc
+
+# Archivos de deployment
+docker-compose.override.yml
+.dockerignore
+kubernetes/secrets/
+
+# Archivos de documentación generados
+docs/_build/
+docs/api/
+
+# Misceláneos
+*.orig
+.history/
+.vscode-server/

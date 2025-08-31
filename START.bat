@@ -1,46 +1,32 @@
 @echo off
 cls
-color 0B
-title ALGO TRADER BOT - EJECUTANDO
-
-echo ================================================================================
-echo                         INICIANDO ALGO TRADER BOT
-echo ================================================================================
-echo.
-echo Este script:
-echo   1. Verifica que MT5 este abierto
-echo   2. Inicia el bot de trading
-echo   3. Muestra las operaciones en tiempo real
-echo.
-pause
-
-cd /d "C:\Users\user\Desktop\Proyectos\Xentristech\Developer\algo-trader-mvp-v3\algo-trader-mvp-v2"
+title ALGO TRADER V3 - INICIO RAPIDO
+color 0E
 
 echo.
-echo [PASO 1] Verificando MetaTrader 5...
-echo --------------------------------------------------------------------------------
-tasklist /FI "IMAGENAME eq terminal64.exe" 2>NUL | find /I /N "terminal64.exe">NUL
-if "%ERRORLEVEL%"=="0" (
-    echo [OK] MetaTrader 5 ya esta ejecutandose
+echo     ___    __    __________     ________  ____  ___    ____  __________  
+echo    /   \  /  /  / _______ /    /_  __  / / __ \/   \  / __ \/ _______ /
+echo   / /\ / /  /  / / ____  /      / / / / / /_/ / /\ / / / / / / ____
+echo  / ____ /  /__/ / /__/ /       / / / / /  _  / ____ / /_/ / / /____ /
+echo /_/  /_/______/________/       /_/ /_/ /_/ /_/_/  /_/_____/________/
+echo.
+echo                           V3.0 PROFESSIONAL
+echo                    TELEGRAM + IA + SEÑALES ACTIVAS
+echo.
+echo ================================================================
+echo.
+
+timeout /t 2 >nul
+
+echo [%TIME%] INICIANDO SISTEMA COMPLETO...
+echo.
+
+REM Verificar Python
+python --version >nul 2>&1
+if %errorlevel% neq 0 (
+    py execute_all_pro.py --auto
 ) else (
-    echo [!] Abriendo MetaTrader 5...
-    start "" "C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe"
-    echo Esperando 15 segundos para que MT5 se conecte...
-    timeout /t 15
+    python execute_all_pro.py --auto
 )
 
-echo.
-echo [PASO 2] Deteniendo procesos anteriores del bot...
-echo --------------------------------------------------------------------------------
-taskkill /F /IM python.exe >nul 2>&1
-echo [OK] Limpieza completada
-
-echo.
-echo [PASO 3] Iniciando el bot de trading...
-echo --------------------------------------------------------------------------------
-echo.
-
-REM Ejecutar el bot y mostrar output
-.venv\Scripts\python.exe RUN_BOT_VISIBLE.py
-
-pause
+exit

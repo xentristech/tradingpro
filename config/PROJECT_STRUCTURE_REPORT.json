@@ -1,0 +1,67 @@
+{
+  "total_files": 743,
+  "python_files": 183,
+  "directories": 240,
+  "file_types": {
+    "": 337,
+    ".example": 3,
+    ".py": 183,
+    ".ps1": 3,
+    ".json": 2,
+    ".bat": 11,
+    ".PY": 1,
+    ".md": 8,
+    ".txt": 1,
+    ".png": 28,
+    ".bak": 1,
+    ".template": 1,
+    ".yaml": 1,
+    ".db": 2,
+    ".log": 128,
+    ".svg": 17,
+    ".yml": 2,
+    ".sample": 14
+  },
+  "largest_files": [
+    [
+      "logs\\real_trader.log",
+      10680934
+    ],
+    [
+      "logs\\multi_trader.log",
+      2524087
+    ],
+    [
+      "logs\\ai_signal_generator.log",
+      1969434
+    ],
+    [
+      "logs\\multi_account.log",
+      1235743
+    ],
+    [
+      "logs\\run_20250817_015044.err.log",
+      411227
+    ],
+    [
+      "logs\\positions_20250817_082245.out.log",
+      199344
+    ],
+    [
+      "advanced_charts\\bars_XAU_USD_live.png",
+      186334
+    ],
+    [
+      "charts\\trading_BTC_USD_20250828_113913.png",
+      177870
+    ],
+    [
+      "advanced_charts\\bars_BTC_USD_live.png",
+      175076
+    ],
+    [
+      "charts\\trading_XAU_USD_20250828_113914.png",
+      164298
+    ]
+  ]
+}

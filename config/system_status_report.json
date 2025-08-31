@@ -1,0 +1,48 @@
+{
+  "timestamp": "2025-08-30T05:32:40.101647",
+  "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "dependencies": {
+    "installed": [
+      "MetaTrader5",
+      "pandas",
+      "numpy",
+      "requests",
+      "plotly",
+      "streamlit",
+      "ta",
+      "xgboost"
+    ],
+    "missing": [
+      "beautifulsoup4",
+      "scikit-learn",
+      "python-dotenv"
+    ]
+  },
+  "files": {
+    "src/core/bot_manager.py": true,
+    "src/trading/main_trader.py": true,
+    "src/ui/dashboards/revolutionary_dashboard_final.py": true,
+    "src/ui/charts/chart_simulation_reviewed.py": true,
+    "src/data/TICK_SYSTEM_FINAL.py": true,
+    "src/ai/ollama_validator.py": true,
+    "src/signals/signal_generator.py": true,
+    ".env": true,
+    "requirements.txt": true
+  },
+  "services": {
+    "Sistema de Ticks (8508)": true,
+    "Revolutionary Dashboard (8512)": true,
+    "Chart Simulation (8516)": true,
+    "TradingView Pro (8517)": true,
+    "Modern Dashboard (8508)": true,
+    "Signal Dashboard (8510)": false
+  },
+  "mt5": {
+    "connected": true,
+    "terminal": "MetaTrader 5 EXNESS",
+    "account": 197678662,
+    "broker": "Exness Technologies Ltd",
+    "balance": 1401.71
+  },
+  "status_percentage": 75.0
+}
