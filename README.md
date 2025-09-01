@@ -1,97 +1,140 @@
-# 🚀 ALGO TRADER V3 - Sistema de Trading Automático con IA
+# 🚀 Trading Pro - AI-Powered Algorithmic Trading System
 
-## 📋 Descripción
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![MetaTrader5](https://img.shields.io/badge/MetaTrader-5-orange.svg)](https://www.metatrader5.com/)
+[![TwelveData](https://img.shields.io/badge/TwelveData-API-green.svg)](https://twelvedata.com/)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg)](LICENSE)
 
-Sistema avanzado de trading automático que combina **Inteligencia Artificial con Ollama**, **datos reales de TwelveData API** y **ejecución automática en MetaTrader 5**. El sistema incluye **detección y corrección automática** de posiciones sin Stop Loss/Take Profit.
+## 📋 Overview
 
-## ✨ Características Principales
+Trading Pro is an advanced algorithmic trading system that combines artificial intelligence with technical analysis to generate trading signals for Forex, Commodities, and Cryptocurrencies. The system features real-time market analysis, automated trade execution, and intelligent risk management.
 
-### 🤖 Inteligencia Artificial Híbrida
-- **Ollama AI**: Análisis de mercado con modelo `deepseek-r1:14b`
-- **TwelveData API**: Datos reales de mercado en tiempo real
-- **Análisis Multi-Timeframe**: 5min, 15min, 1h para máxima precisión
+### 🎯 Key Features
 
-### 🛡️ Sistema de Protección Automática
-- **Detección Automática**: Identifica trades sin SL/TP cada 60 segundos
-- **Corrección Inteligente**: Calcula SL/TP usando ATR dinámico
-- **Notificaciones Telegram**: Alertas inmediatas de detección y corrección
-- **Relación Riesgo/Beneficio**: 2:3 ATR (Stop Loss: 2x ATR, Take Profit: 3x ATR)
+- **AI-Powered Analysis**: Integration with Ollama (DeepSeek-R1 14B model) for intelligent market analysis
+- **Multi-Asset Support**: Trade XAU/USD (Gold), BTC/USD (Bitcoin), EUR/USD, GBP/USD
+- **Dual Strategy System**: 
+  - AI Hybrid Strategy (Technical + AI Analysis)
+  - Multi-Timeframe Strategy (5min, 15min, 30min, 1h convergence)
+- **Automated Trading**: Direct integration with MetaTrader 5 for automatic order execution
+- **Risk Management**: Dynamic SL/TP calculation based on ATR, position monitoring every 30 seconds
+- **Real-Time Data**: TwelveData API integration for live market data and indicators
+- **Telegram Notifications**: Real-time alerts for trades and system status
 
-### 📈 Trading Profesional
-- **Solo Datos Reales**: CERO datos simulados o sintéticos
-- **Reconexión MT5**: Detección automática cuando MT5 se cierra
-- **Gestión de Horarios**: BTCUSD 24/7, Forex solo en horarios de mercado
-- **Risk Management**: Cálculo automático de tamaño de posición
+## 🏗️ Architecture
 
-### 📱 Notificaciones Telegram
-- Alertas de señales de trading
-- Detección de trades sin protección
-- Confirmaciones de corrección automática
-- Estado del sistema y estadísticas
-
-## 🔧 Requisitos del Sistema
-
-### Software Requerido
-- **Python 3.8+**
-- **MetaTrader 5**
-- **Ollama** (con modelo deepseek-r1:14b)
-
-### APIs Necesarias
-- **TwelveData API Key** (datos de mercado reales)
-- **Telegram Bot Token** (notificaciones)
-
-## ⚙️ Configuración
-
-### 1. Configuración de APIs
-
-Edita el archivo `configs/.env`:
-
-```env
-# === API KEYS ===
-TWELVEDATA_API_KEY=tu_api_key_real
-TELEGRAM_TOKEN=tu_telegram_bot_token
-TELEGRAM_CHAT_ID=tu_chat_id
-
-# === IA Configuration ===
-OLLAMA_API_BASE=http://localhost:11434/v1
-OLLAMA_MODEL=deepseek-r1:14b
-
-# === MetaTrader 5 ===
-MT5_LOGIN=tu_numero_cuenta
-MT5_PASSWORD=tu_contraseña
-MT5_SERVER=tu_servidor
-MT5_TIMEOUT=60000
-MT5_DEVIATION=20
-MT5_MAGIC=20250817
+```
+algo-trader-mvp-v2/
+├── src/
+│   ├── signals/              # Trading strategies
+│   │   ├── ai_hybrid_strategy.py
+│   │   ├── multi_timeframe_strategy.py
+│   │   └── advanced_signal_generator.py
+│   ├── broker/               # MT5 integration
+│   │   └── mt5_connection.py
+│   ├── data/                 # Data providers
+│   │   └── twelvedata_client.py
+│   ├── ai/                   # AI integration
+│   │   └── ollama_client.py
+│   └── notifiers/            # Notifications
+│       └── telegram_notifier.py
+├── configs/
+│   └── .env                  # Configuration
+├── tests/                    # Test files
+└── START_TRADING_SYSTEM_MONITOR_PRIORITY_CLEAN.py  # Main entry point
 ```
 
-### 2. Instalación de Dependencias
+## 🔧 Installation
 
+### Prerequisites
+
+- Python 3.9 or higher
+- MetaTrader 5 Terminal
+- Ollama with DeepSeek-R1 model
+- TwelveData API key (PRO plan recommended)
+
+### Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/xentristech/tradingpro.git
+cd tradingpro
+```
+
+2. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configuración de Ollama
-
+3. **Configure environment variables**
 ```bash
-# Instalar modelo
+cp configs/.env.example configs/.env
+# Edit configs/.env with your credentials
+```
+
+4. **Install and configure Ollama**
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull the DeepSeek model
 ollama pull deepseek-r1:14b
-
-# Verificar que está corriendo
-ollama serve
 ```
 
-## 🚀 Ejecución del Sistema
+5. **Configure MetaTrader 5**
+- Install MT5 from your broker
+- Enable automated trading in MT5
+- Update MT5_PATH in .env file
 
-### Iniciar Sistema Completo
+## ⚙️ Configuration
+
+### Environment Variables (.env)
+
+```env
+# API Keys
+TWELVEDATA_API_KEY=your_api_key_here
+TELEGRAM_TOKEN=your_telegram_bot_token
+TELEGRAM_CHAT_ID=your_telegram_chat_id
+
+# MetaTrader 5
+MT5_PATH=C:\\Program Files\\MetaTrader 5\\terminal64.exe
+MT5_LOGIN=your_account_number
+MT5_PASSWORD=your_password
+MT5_SERVER=your_broker_server
+
+# Trading Configuration
+RISK_PER_TRADE=0.01  # 1% risk per trade
+MAX_CONCURRENT_TRADES=3
+
+# AI Configuration
+OLLAMA_API_BASE=http://localhost:11434/v1
+OLLAMA_MODEL=deepseek-r1:14b
+```
+
+## 🚀 Usage
+
+### Starting the System
+
 ```bash
-python START_TRADING_SYSTEM.py
+# Run the main trading system with priority monitoring
+python START_TRADING_SYSTEM_MONITOR_PRIORITY_CLEAN.py
 ```
 
-### Probar Reconexión MT5
-```bash
-python TEST_MT5_RECONNECTION_ENHANCED.py
-```
+### System Components
+
+1. **Signal Generator**: Analyzes markets every 60 seconds
+2. **SL/TP Monitor**: Checks and corrects positions every 30 seconds
+3. **AI Analysis**: Processes market data through Ollama for decisions
+4. **Auto Execution**: Places trades automatically when signals meet criteria
+
+### Trading Schedule
+
+| Asset | Trading Hours (UTC) |
+|-------|-------------------|
+| **BTC/USD** | 24/7 |
+| **XAU/USD** | Sunday 22:00 - Friday 22:00 |
+| **EUR/USD** | Sunday 22:00 - Friday 22:00 |
+| **GBP/USD** | Sunday 22:00 - Friday 22:00 |
 
 ## 📊 Arquitectura del Sistema
 
