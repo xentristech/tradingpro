@@ -160,7 +160,7 @@ def monitor_and_correct_positions():
                     needs_correction = not has_sl or not has_tp
                     
                     if needs_correction:
-                        print(f"   🚨 [DETECTADO] Trade sin protección completa!")
+                        print(f"   [ALERTA] Trade sin proteccion completa!")
                         
                         try:
                             # Calcular SL/TP usando datos reales
@@ -192,7 +192,7 @@ def monitor_and_correct_positions():
                             
                             if result and result.retcode == mt5.TRADE_RETCODE_DONE:
                                 total_corrected += 1
-                                print(f"   ✅ [CORREGIDO] Posición #{ticket} modificada exitosamente!")
+                                print(f"   [CORREGIDO] Posicion #{ticket} modificada exitosamente!")
                                 print(f"      Nuevo SL: {final_sl:.5f}")
                                 print(f"      Nuevo TP: {final_tp:.5f}")
                                 
@@ -201,14 +201,14 @@ def monitor_and_correct_positions():
                                 
                             else:
                                 error_msg = result.comment if result else "Sin respuesta"
-                                print(f"   ❌ [ERROR] No se pudo corregir: {error_msg}")
+                                print(f"   [ERROR] No se pudo corregir: {error_msg}")
                                 logger.error(f"Error corrigiendo posición {ticket}: {error_msg}")
                                 
                         except Exception as e:
-                            print(f"   ❌ [ERROR] Error en corrección: {e}")
+                            print(f"   [ERROR] Error en correccion: {e}")
                             logger.error(f"Error calculando SL/TP para {symbol}: {e}")
                     else:
-                        print(f"   ✅ [OK] Posición ya tiene protección completa")
+                        print(f"   [OK] Posicion ya tiene proteccion completa")
             
             # Mostrar estadísticas cada 6 ciclos (1 minuto)
             if cycle_count % 6 == 0:

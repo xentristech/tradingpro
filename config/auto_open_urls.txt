@@ -1,0 +1,9 @@
+# Lista de páginas a abrir automáticamente al iniciar el sistema
+# Una URL por línea. Las líneas que empiezan con # se ignoran.
+
+https://xentris.tech
+https://www.youtube.com/@XentrisTech
+https://www.myfxbook.com
+https://www.exness.com
+https://news.google.com/search?q=tecnologia&hl=es-419&gl=US&ceid=US:es-419
+

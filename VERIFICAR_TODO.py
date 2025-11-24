@@ -57,8 +57,7 @@ else:
         r"C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe",
         r"C:\Program Files\MetaTrader 5\terminal64.exe",
         r"C:\Program Files\Exness MT5\terminal64.exe",
-        r"C:\Program Files (x86)\MetaTrader 5\terminal64.exe",
-        r"C:\Program Files\Ava Trade MT5 Terminal\terminal64.exe"
+        r"C:\Program Files (x86)\MetaTrader 5\terminal64.exe"
     ]
     
     mt5_found = False

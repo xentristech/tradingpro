@@ -26,13 +26,22 @@ if sys.platform == 'win32':
 # Añadir path del proyecto
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-# Importar notificador de Telegram
+# Importar notificador de Telegram y historial
 try:
     from src.notifiers.telegram_notifier import TelegramNotifier
     TELEGRAM_AVAILABLE = True
 except ImportError:
     TELEGRAM_AVAILABLE = False
     print("Advertencia: Telegram no disponible")
+
+# Importar gestor de historial
+try:
+    from src.utils.signal_history import signal_history
+    HISTORY_AVAILABLE = True
+except ImportError:
+    HISTORY_AVAILABLE = False
+    signal_history = None
+    print("Advertencia: Historial CSV no disponible")
 
 # Importar MT5 y conexión
 try:
@@ -71,6 +80,9 @@ class SignalGenerator:
         self.positions_corrected = 0
         self.last_signals = {}
         self.signal_history = []
+        
+        # Umbral de confianza para ejecutar trades (15% - Más agresivo para detectar oportunidades)
+        self.confidence_threshold = 0.15
         
         # Configurar logging con encoding UTF-8
         logging.basicConfig(
@@ -130,6 +142,28 @@ class SignalGenerator:
             self.logger.warning(f"[WARNING] AI Hybrid Strategy no disponible: {e}")
             self.ai_hybrid_strategy = None
         
+        # Cargar nueva estrategia Multi-Timeframe
+        self.multi_tf_available = False
+        try:
+            from src.signals.multi_timeframe_strategy import multi_timeframe_strategy_function
+            self.multi_tf_strategy = multi_timeframe_strategy_function
+            self.multi_tf_available = True
+            self.logger.info("[OK] Estrategia Multi-Timeframe cargada (TwelveData + IA)")
+        except ImportError as e:
+            self.logger.warning(f"[WARNING] Multi-Timeframe Strategy no disponible: {e}")
+            self.multi_tf_strategy = None
+
+        # Cargar detector anticipatorio institucional (MT5)
+        self.anticipatory_detector = None
+        try:
+            sys.path.append(str(Path(__file__).parent.parent.parent))
+            from DETECTOR_ANTICIPATORIO_INSTITUCIONAL import DetectorAnticipatorioInstitucional
+            self.anticipatory_detector = DetectorAnticipatorioInstitucional()
+            self.logger.info("[OK] Detector Anticipatorio Institucional cargado (MT5)")
+        except ImportError as e:
+            self.logger.warning(f"[WARNING] Detector Anticipatorio no disponible: {e}")
+            self.anticipatory_detector = None
+        
         # SOLO DATOS REALES - Estrategias tradicionales DESACTIVADAS temporalmente
         strategies_dict = {
             # TODAS DESACTIVADAS - SOLO AI HYBRID CON DATOS REALES
@@ -145,6 +179,10 @@ class SignalGenerator:
         # Agregar estrategia IA si está disponible
         if self.ai_hybrid_available:
             strategies_dict['ai_hybrid_ollama'] = self.ai_hybrid_strategy
+        
+        # Agregar estrategia Multi-Timeframe si está disponible
+        if self.multi_tf_available:
+            strategies_dict['multi_timeframe_ai'] = self.multi_tf_strategy
         
         self.strategies = strategies_dict
         
@@ -178,9 +216,18 @@ class SignalGenerator:
         if 'BTCUSDm' in self.symbols:
             active_symbols.append('BTCUSDm')
         
-        # Forex symbols solo cuando mercado esté abierto
+        # XAUUSDm (Oro) - activo casi 24h excepto sábados
+        from datetime import datetime
+        current_hour = datetime.utcnow().weekday()
+        if current_hour != 5:  # Sábado es día 5
+            if 'XAUUSDm' in self.symbols:
+                active_symbols.append('XAUUSDm')
+            elif 'XAUUSD' in self.symbols:  # Soporte legacy
+                active_symbols.append('XAUUSD')
+        
+        # Otros Forex symbols solo cuando mercado esté abierto
         if self.is_forex_market_open():
-            forex_symbols = ['EURUSD', 'GBPUSD', 'XAUUSD']
+            forex_symbols = ['EURUSD', 'GBPUSD']
             for symbol in forex_symbols:
                 if symbol in self.symbols:
                     active_symbols.append(symbol)
@@ -903,7 +950,33 @@ class SignalGenerator:
                 
             # Calcular indicadores
             df = self.calculate_indicators(df)
-            
+
+            # DETECTOR ANTICIPATORIO INSTITUCIONAL - PRIORIDAD MÁXIMA
+            if self.anticipatory_detector:
+                try:
+                    anticipatory_signal = self.anticipatory_detector.analizar_momentum_actual(symbol)
+                    if anticipatory_signal and anticipatory_signal.get('tipo'):
+                        # Crear señal basada en detección anticipatoria
+                        signal = {
+                            'symbol': symbol,
+                            'type': anticipatory_signal['tipo'],
+                            'price': anticipatory_signal['precio_actual'],
+                            'confidence': anticipatory_signal['confianza'],  # Usar confianza del detector
+                            'strength': 0.95,  # Alta fuerza para señales anticipatorias
+                            'strategy': 'ANTICIPATORY_INSTITUTIONAL',
+                            'reason': f"Detección anticipatoria: {anticipatory_signal['razon']}",
+                            'ratio_tamaño': anticipatory_signal['ratio_tamaño'],
+                            'tiempo_restante': anticipatory_signal['tiempo_restante_vela']
+                        }
+                        signal = self.calculate_tp_sl(signal, df)
+                        signal['timeframe'] = 'M1'
+                        signal['timestamp'] = datetime.now()
+                        all_signals.append(signal)
+                        self.logger.info(f"SEÑAL ANTICIPATORIA DETECTADA: {symbol} {signal['type']} - Confianza: {signal['confidence']:.1%}")
+                        self.logger.info(f"   Tiempo restante: {anticipatory_signal['tiempo_restante_vela']:.0f}s")
+                except Exception as e:
+                    self.logger.error(f"Error en detector anticipatorio: {e}")
+
             # Aplicar todas las estrategias
             for strategy_name, strategy_func in self.strategies.items():
                 try:
@@ -923,11 +996,19 @@ class SignalGenerator:
         return all_signals
         
     def filter_signals(self, signals):
-        """Filtra y prioriza señales"""
+        """Filtra y prioriza señales por confianza y fuerza"""
         # Eliminar duplicados del mismo símbolo
         filtered = {}
+        confidence_filtered = []
         
+        # Primero filtrar por umbral de confianza
         for signal in signals:
+            confidence = signal.get('confidence', 0.0)
+            if confidence >= self.confidence_threshold:
+                confidence_filtered.append(signal)
+        
+        # Luego eliminar duplicados por símbolo
+        for signal in confidence_filtered:
             key = signal['symbol']
             
             # Si no existe o la nueva señal es más fuerte
@@ -982,8 +1063,13 @@ class SignalGenerator:
             # Verificar si ya hay posición en este símbolo
             positions = self.mt5_connection.get_positions(symbol)
             if positions:
-                self.logger.info(f"Ya hay posición abierta en {symbol}, saltando...")
-                return False
+                # Permitir múltiples posiciones si la señal es muy fuerte (>75%)
+                signal_strength = signal.get('strength', 0)
+                if signal_strength > 0.75:  # 75% o más
+                    self.logger.info(f"Señal FUERTE ({signal_strength:.1%}) - Permitiendo posición adicional en {symbol}")
+                else:
+                    self.logger.info(f"Ya hay posición abierta en {symbol}, saltando...")
+                    return False
             
             # Calcular tamaño de posición
             volume = self.calculate_position_size(symbol, signal)
@@ -1053,6 +1139,35 @@ class SignalGenerator:
         """Envía señales por Telegram y ejecuta trades si está habilitado"""
         for signal in signals:
             try:
+                # Guardar señal en historial CSV
+                if HISTORY_AVAILABLE and signal_history:
+                    try:
+                        # Crear respuesta simulada para guardado
+                        ia_response = f"""
+📊 **INDICADORES CLAVE**
+RSI: {signal.get('rsi', 'N/A')}, MACD: {signal.get('macd', 'N/A')}, ATR: {signal.get('atr', 'N/A')}
+
+✅ **SEÑAL FINAL: {signal['type'].upper()}**
+
+🧠 **RAZONAMIENTO**
+{signal.get('reasoning', 'Análisis técnico automático')}
+
+📈 **SETUP OPERATIVO**
+- Entrada: {signal.get('price', 0)}
+- SL: {signal.get('sl', 0)}
+- TP: {signal.get('tp', 0)}
+- Ratio: {signal.get('ratio', 0)}
+- Confianza: {signal.get('strength', 70)}%
+"""
+                        signal_history.save_signal(
+                            ia_response=ia_response,
+                            symbol=signal['symbol'],
+                            strategy=signal.get('strategy', 'AI_Hybrid'),
+                            timeframes="5min,15min,1h"
+                        )
+                    except Exception as e:
+                        self.logger.error(f"Error guardando historial: {e}")
+                
                 # Enviar notificación de señal
                 if self.telegram and self.telegram.is_active:
                     self.telegram.send_signal(signal)

@@ -99,21 +99,14 @@ def main():
     
     print(f"Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
-    # CONFIGURACIÓN CORRECTA DE CUENTAS
+    # CONFIGURACIÓN CORRECTA DE CUENTAS - Solo EXNESS para evitar conflictos
     accounts = [
-        {
-            'name': 'AVA_REAL',
-            'login': 89390972,
-            'password': 'Naty1140855133$',  # Password correcta de AVA
-            'server': 'Ava-Real 1-MT5',
-            'path': 'C:\\Program Files\\Ava Trade MT5 Terminal\\terminal64.exe'
-        },
         {
             'name': 'EXNESS_TRIAL',
             'login': 197678662,
-            'password': 'Badboy930218*',  # Password de Exness
+            'password': 'Badboy930218*',
             'server': 'Exness-MT5Trial11',
-            'path': 'C:\\Program Files\\MetaTrader 5 Exness\\terminal64.exe'
+            'path': 'C:\\Program Files\\MetaTrader 5 EXNESS\\terminal64.exe'
         }
     ]
     

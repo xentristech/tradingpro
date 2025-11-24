@@ -46,8 +46,7 @@ def open_mt5():
         # Buscar en ubicaciones alternativas
         alt_paths = [
             r"C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe",
-            r"C:\Program Files\MetaTrader 5\terminal64.exe",
-            r"C:\Program Files\Ava Trade MT5 Terminal\terminal64.exe"
+            r"C:\Program Files\MetaTrader 5\terminal64.exe"
         ]
         
         for path in alt_paths:

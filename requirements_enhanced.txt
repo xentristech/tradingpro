@@ -1,0 +1,132 @@
+# Enhanced Trading System Requirements
+# Trading Pro System v3.0
+
+# Core Trading and Data
+MetaTrader5>=5.0.45
+numpy>=1.21.0
+pandas>=1.5.0
+yfinance>=0.2.12
+ta-lib>=0.4.25
+ccxt>=4.0.0
+
+# Machine Learning and AI
+scikit-learn>=1.3.0
+xgboost>=1.7.0
+optuna>=3.0.0
+joblib>=1.3.0
+
+# Statistical Analysis
+scipy>=1.10.0
+statsmodels>=0.14.0
+
+# Visualization and Dashboard
+streamlit>=1.25.0
+plotly>=5.15.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Web and API
+fastapi>=0.100.0
+uvicorn>=0.22.0
+websockets>=11.0.0
+requests>=2.31.0
+aiohttp>=3.8.0
+
+# Database and Storage
+sqlite3  # Built-in
+sqlalchemy>=2.0.0
+redis>=4.6.0
+
+# Data Processing
+talib>=0.4.25
+ta>=0.10.2
+
+# Risk Management
+cvxpy>=1.3.0  # For portfolio optimization
+cvxopt>=1.3.0
+
+# Utilities and Configuration
+python-dotenv>=1.0.0
+pyyaml>=6.0
+configparser>=5.3.0
+logging>=0.4.9.6
+schedule>=1.2.0
+
+# Date and Time
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Testing and Quality
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black>=23.7.0
+flake8>=6.0.0
+
+# Notification Systems
+python-telegram-bot>=20.0
+smtplib  # Built-in
+email-validator>=2.0.0
+
+# Development Tools
+jupyter>=1.0.0
+ipython>=8.14.0
+notebook>=7.0.0
+
+# Performance and Monitoring
+psutil>=5.9.0
+memory-profiler>=0.61.0
+line-profiler>=4.1.0
+
+# Async and Concurrency
+asyncio  # Built-in
+concurrent.futures  # Built-in
+threading  # Built-in
+multiprocessing  # Built-in
+
+# Networking and Communication
+paramiko>=3.2.0  # For SSH connections
+fabric>=3.1.0    # For remote operations
+
+# Data Validation
+pydantic>=2.0.0
+marshmallow>=3.20.0
+
+# Documentation
+sphinx>=7.1.0
+mkdocs>=1.5.0
+
+# Optional: Advanced ML Libraries
+# tensorflow>=2.13.0    # Uncomment for deep learning
+# torch>=2.0.0          # Uncomment for PyTorch
+# transformers>=4.30.0  # Uncomment for NLP models
+
+# Optional: Time Series Analysis
+# prophet>=1.1.4        # Uncomment for Facebook Prophet
+# arch>=6.2.0          # Uncomment for ARCH/GARCH models
+
+# Optional: Alternative Data Sources
+# alpha-vantage>=2.3.1  # Uncomment for Alpha Vantage API
+# iex-api-python>=0.0.7 # Uncomment for IEX Cloud API
+# quandl>=3.7.0         # Uncomment for Quandl data
+
+# Optional: Cloud and Deployment
+# docker>=6.1.0         # Uncomment for containerization
+# kubernetes>=27.2.0    # Uncomment for K8s deployment
+# boto3>=1.28.0         # Uncomment for AWS integration
+# google-cloud>=0.34.0  # Uncomment for GCP integration
+
+# Security
+cryptography>=41.0.0
+bcrypt>=4.0.0
+
+# Caching
+diskcache>=5.6.0
+
+# CLI Tools
+click>=8.1.0
+rich>=13.4.0  # For beautiful CLI output
+
+# Development and Debugging
+pdb  # Built-in
+ipdb>=0.13.0
+debugpy>=1.6.0

@@ -97,7 +97,7 @@ Responde EXACTAMENTE en este formato JSON:
                 }
             }
             
-            response = requests.post(url, json=payload, timeout=30)
+            response = requests.post(url, json=payload, timeout=180)
             
             if response.status_code == 200:
                 result = response.json()

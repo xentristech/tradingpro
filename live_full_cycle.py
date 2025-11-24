@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LIVE FULL CYCLE TEST - Validación completa con cuenta LIVE
+EXNESS FULL CYCLE TEST - Validación completa con cuenta EXNESS
 """
 import MetaTrader5 as mt5
 import logging
@@ -10,8 +10,8 @@ from datetime import datetime
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(message)s')
 
-def connect_live():
-    """Conectar específicamente a cuenta LIVE"""
+def connect_exness():
+    """Conectar específicamente a cuenta EXNESS"""
     if not mt5.initialize():
         logging.error("No se pudo inicializar MT5")
         return False
@@ -24,11 +24,11 @@ def connect_live():
     logging.info(f"Conectado - Cuenta: {account.login} | Balance: ${account.balance:.2f}")
     logging.info(f"Servidor: {account.server}")
     
-    # Verificar si es cuenta LIVE
-    if account.login == 89390972:
-        logging.info("✅ Conectado a cuenta LIVE")
+    # Verificar si es cuenta EXNESS
+    if account.login == 197678662:
+        logging.info("✅ Conectado a cuenta EXNESS")
     else:
-        logging.warning(f"⚠️ Conectado a cuenta {account.login}, no es la LIVE 89390972")
+        logging.warning(f"⚠️ Conectado a cuenta {account.login}, no es la EXNESS 197678662")
         logging.info("Continuando con cuenta disponible...")
     
     return True
@@ -242,7 +242,7 @@ def close_by_ticket(ticket):
 def run_full_validation():
     """Ejecutar validación completa"""
     
-    if not connect_live():
+    if not connect_exness():
         return False
     
     try:
@@ -321,7 +321,7 @@ def run_full_validation():
         # Telegram notification
         try:
             from notifiers.telegram_notifier import send_telegram_message
-            send_telegram_message(f"🎉 VALIDACIÓN COMPLETA EXITOSA:\n- Cerradas {len(initial_positions)} posiciones existentes\n- Creada posición {new_ticket} en {symbol}\n- Cerrada la posición creada\n- Sistema funcionando perfectamente")
+            send_telegram_message(f"🎉 VALIDACIÓN EXNESS COMPLETA EXITOSA:\n- Cerradas {len(initial_positions)} posiciones existentes\n- Creada posición {new_ticket} en {symbol}\n- Cerrada la posición creada\n- Sistema EXNESS funcionando perfectamente")
         except Exception as e:
             logging.debug(f"Error Telegram: {e}")
         
@@ -333,14 +333,14 @@ def run_full_validation():
 
 if __name__ == "__main__":
     logging.info("=" * 70)
-    logging.info("VALIDACIÓN COMPLETA DEL SISTEMA DE TRADING")
+    logging.info("VALIDACIÓN COMPLETA DEL SISTEMA EXNESS")
     logging.info("Cerrar → Crear → Cerrar → Validar")
     logging.info("=" * 70)
     
     try:
         if run_full_validation():
             logging.info("=" * 70)
-            logging.info("🎉 SISTEMA COMPLETAMENTE VALIDADO Y FUNCIONAL")
+            logging.info("🎉 SISTEMA EXNESS COMPLETAMENTE VALIDADO Y FUNCIONAL")
             logging.info("   ✅ Cierre de posiciones existentes: OK")
             logging.info("   ✅ Creación de nuevas posiciones: OK")
             logging.info("   ✅ Cierre de posiciones específicas: OK")

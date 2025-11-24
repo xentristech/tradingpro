@@ -159,6 +159,86 @@ class TelegramNotifier:
         except Exception as e:
             self.logger.error(f"Error enviando actualización de trade: {e}")
             return False
+    
+    def send_breakeven_notification(self, symbol: str, ticket: int, old_sl: float, new_sl: float, pips_profit: float):
+        """Envía notificación de breakeven aplicado"""
+        try:
+            message = f"""
+🛡️ <b>BREAKEVEN APLICADO</b> 🛡️
+
+📊 <b>Símbolo:</b> {symbol}
+🎫 <b>Ticket:</b> #{ticket}
+💰 <b>Ganancia:</b> {pips_profit:.1f} pips
+
+📈 <b>Stop Loss:</b>
+   Anterior: {old_sl:.5f}
+   Nuevo: {new_sl:.5f}
+
+✅ <b>Ganancia asegurada!</b>
+Mínimo garantizado en breakeven
+
+⏰ {datetime.now().strftime('%H:%M:%S')}
+🤖 <i>Risk Manager - Algo Trader V3</i>
+"""
+            
+            return self.send_message(message, parse_mode='HTML')
+            
+        except Exception as e:
+            self.logger.error(f"Error enviando notificación de breakeven: {e}")
+            return False
+    
+    def send_trailing_notification(self, symbol: str, ticket: int, old_sl: float, new_sl: float, pips_profit: float, distance_pips: int):
+        """Envía notificación de trailing stop aplicado"""
+        try:
+            message = f"""
+🎯 <b>TRAILING STOP APLICADO</b> 🎯
+
+📊 <b>Símbolo:</b> {symbol}
+🎫 <b>Ticket:</b> #{ticket}
+💰 <b>Ganancia:</b> {pips_profit:.1f} pips
+
+📈 <b>Stop Loss:</b>
+   Anterior: {old_sl:.5f}
+   Nuevo: {new_sl:.5f}
+
+📏 <b>Distancia:</b> {distance_pips} pips
+🔄 <b>Siguiendo el precio automáticamente</b>
+
+⏰ {datetime.now().strftime('%H:%M:%S')}
+🤖 <i>Risk Manager - Algo Trader V3</i>
+"""
+            
+            return self.send_message(message, parse_mode='HTML')
+            
+        except Exception as e:
+            self.logger.error(f"Error enviando notificación de trailing: {e}")
+            return False
+    
+    def send_protection_summary(self, breakeven_count: int, trailing_count: int, total_positions: int):
+        """Envía resumen de protecciones aplicadas"""
+        try:
+            if breakeven_count == 0 and trailing_count == 0:
+                return True  # No enviar si no hay acciones
+            
+            message = f"""
+📊 <b>RESUMEN DE PROTECCIONES</b> 📊
+
+🔍 <b>Posiciones revisadas:</b> {total_positions}
+🛡️ <b>Breakeven aplicados:</b> {breakeven_count}
+🎯 <b>Trailing aplicados:</b> {trailing_count}
+
+✅ <b>Sistema de Risk Management activo</b>
+Protegiendo ganancias automáticamente
+
+⏰ {datetime.now().strftime('%H:%M:%S')}
+🤖 <i>Risk Manager - Algo Trader V3</i>
+"""
+            
+            return self.send_message(message, parse_mode='HTML')
+            
+        except Exception as e:
+            self.logger.error(f"Error enviando resumen de protecciones: {e}")
+            return False
             
     def send_alert(self, alert_type: str, message: str, critical: bool = False):
         """Envía una alerta al chat"""

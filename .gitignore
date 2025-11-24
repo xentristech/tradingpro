@@ -170,3 +170,51 @@ docs/api/
 *.orig
 .history/
 .vscode-server/
+
+# ============================================
+# ARCHIVOS ADICIONALES A IGNORAR
+# ============================================
+
+# Exportaciones para Codex/AI
+codex_export/
+
+# Reportes detallados generados
+reporte_detallado_*.json
+diario_trades_*.json
+posiciones_output.txt
+output.txt
+
+# Archivos de trading journal
+trading_journal.json
+patrones_aprendizaje.json
+
+# Archivos temporales de sistema
+nul
+*.tmp.*
+src/signals/*.tmp.*
+
+# Claude Code
+.claude/
+
+# Archivos de configuración sensibles en subdirectorios
+configs/.env
+configs/.env.bak
+configs/.env.risk_manager
+config/.env
+
+# Logs específicos
+*.log
+ciclo_*.log
+detector_*.log
+diario_trades_*.log
+monitoreo_*.log
+sistema_completo_*.log
+
+# Archivos de estado del sistema
+config/system_status_report.json
+config/PROJECT_STRUCTURE_REPORT.json
+
+# Mantener archivos de ejemplo
+!.env.example
+!configs/.env.example
+!configs/.env.template

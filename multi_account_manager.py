@@ -41,22 +41,13 @@ class MultiAccountManager:
         # Cargar configuración
         load_dotenv('configs/.env')
         
-        # Configurar cuentas
+        # Configurar cuenta EXNESS únicamente
         self.accounts = {
-            'ava_real': {
-                'login': 89390972,
-                'server': 'Ava-Real 1-MT5',
-                'password': os.getenv('MT5_PASSWORD_AVA', ''),
-                'path': os.getenv('MT5_PATH_AVA', 'C:\\Program Files\\MetaTrader 5\\terminal64.exe'),
-                'active': True,
-                'monitor_only': True,  # Solo monitoreo, sin automatización
-                'auto_trade': False
-            },
             'exness_trial': {
-                'login': 197678662,
-                'server': 'Exness-MT5Trial11', 
-                'password': os.getenv('MT5_PASSWORD_EXNESS', ''),
-                'path': os.getenv('MT5_PATH_EXNESS', 'C:\\Program Files\\MetaTrader 5 Exness\\terminal64.exe'),
+                'login': int(os.getenv('MT5_LOGIN', 197678662)),
+                'server': os.getenv('MT5_SERVER', 'Exness-MT5Trial11'),
+                'password': os.getenv('MT5_PASSWORD', ''),
+                'path': os.getenv('MT5_PATH', 'C:\\Program Files\\MetaTrader 5 EXNESS\\terminal64.exe'),
                 'active': True,
                 'monitor_only': False,  # Automatización completa habilitada
                 'auto_trade': True
@@ -74,7 +65,7 @@ class MultiAccountManager:
         self.running = False
         self.account_status = {}
         
-        logger.info("MultiAccountManager inicializado")
+        logger.info("ExnessAccountManager inicializado")
     
     def _initialize_telegram(self):
         """Inicializa notificador de Telegram"""
@@ -91,7 +82,7 @@ class MultiAccountManager:
     async def start_monitoring(self):
         """Inicia el monitoreo de todas las cuentas"""
         logger.info("=" * 60)
-        logger.info("INICIANDO MULTI ACCOUNT MANAGER")
+        logger.info("INICIANDO EXNESS ACCOUNT MANAGER")
         logger.info("=" * 60)
         
         self.running = True
@@ -99,11 +90,11 @@ class MultiAccountManager:
         # Notificar inicio
         if self.telegram_notifier:
             await self.telegram_notifier.send_message(
-                "🏦 <b>MULTI ACCOUNT MANAGER INICIADO</b>\n\n"
-                "✅ Monitoreando múltiples cuentas MT5\n"
+                "🏦 <b>EXNESS ACCOUNT MANAGER INICIADO</b>\n\n"
+                "✅ Monitoreando cuenta EXNESS MT5\n"
                 "✅ Validación automática con IA\n"
                 "✅ Gestión de SL/TP inteligente\n\n"
-                "<i>Verificando conexiones...</i>"
+                "<i>Verificando conexión...</i>"
             )
         
         # Loop principal
@@ -265,7 +256,7 @@ class MultiAccountManager:
         
         try:
             message = f"""
-🏦 <b>RESUMEN MULTI-CUENTA</b>
+🏦 <b>RESUMEN CUENTA EXNESS</b>
 
 📊 <b>ESTADO GENERAL:</b>
 • Total posiciones: {total_positions}
@@ -306,18 +297,18 @@ class MultiAccountManager:
     
     async def stop_monitoring(self):
         """Detiene el monitoreo"""
-        logger.info("Deteniendo Multi Account Manager...")
+        logger.info("Deteniendo Exness Account Manager...")
         
         self.running = False
         
         if self.telegram_notifier:
             await self.telegram_notifier.send_message(
-                "🛑 <b>MULTI ACCOUNT MANAGER DETENIDO</b>\n\n"
-                "<i>Monitoreo de cuentas desactivado</i>"
+                "🛑 <b>EXNESS ACCOUNT MANAGER DETENIDO</b>\n\n"
+                "<i>Monitoreo de cuenta desactivado</i>"
             )
         
         mt5.shutdown()
-        logger.info("Multi Account Manager detenido")
+        logger.info("Exness Account Manager detenido")
     
     def get_status(self) -> Dict:
         """Obtiene el estado del gestor"""
@@ -343,13 +334,14 @@ async def main():
 if __name__ == "__main__":
     print("""
     ============================================================
-    MULTI ACCOUNT MANAGER v3.0 - Gestor de Múltiples Cuentas
+    EXNESS ACCOUNT MANAGER v3.0 - Gestor de Cuenta EXNESS
     ============================================================
     
-    - Monitoreo de múltiples cuentas MT5
+    - Monitoreo de cuenta EXNESS MT5
+    - Configuración desde variables de entorno
     - Validación automática con IA
     - Gestión inteligente de SL/TP
-    - Notificaciones consolidadas
+    - Notificaciones por Telegram
     
     ============================================================
     """)

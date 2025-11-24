@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-LIVE TEST TRADE - Forzar conexión a cuenta LIVE y ejecutar trade
+EXNESS TEST TRADE - Conexión a cuenta EXNESS y ejecutar trade
 """
 import MetaTrader5 as mt5
 import logging
@@ -9,8 +9,8 @@ from datetime import datetime
 # Configurar logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s | %(message)s')
 
-def connect_to_live():
-    """Forzar conexión a cuenta LIVE"""
+def connect_to_exness():
+    """Conectar a cuenta EXNESS"""
     # Primero conectar sin credenciales (usa la cuenta actualmente logueada)
     if not mt5.initialize():
         logging.error("No se pudo inicializar MT5")
@@ -26,17 +26,17 @@ def connect_to_live():
     logging.info(f"Balance: ${account.balance:.2f}")
     logging.info(f"Servidor: {account.server}")
     
-    # Si no es la cuenta LIVE, intentar cambiar
-    if account.login != 89390972:
-        logging.warning(f"Cuenta actual es {account.login}, no la cuenta LIVE 89390972")
-        logging.info("Intentando usar cuenta disponible...")
+    # Verificar si es la cuenta EXNESS
+    if account.login != 197678662:
+        logging.warning(f"Cuenta actual es {account.login}, no la cuenta EXNESS 197678662")
+        logging.info("Continuando con cuenta disponible...")
     
     return True
 
 def execute_simple_trade():
-    """Ejecutar trade simple en la cuenta disponible"""
+    """Ejecutar trade simple en la cuenta EXNESS"""
     
-    if not connect_to_live():
+    if not connect_to_exness():
         return False
     
     # Buscar símbolo disponible
@@ -165,7 +165,7 @@ def execute_simple_trade():
             # Notificación Telegram
             try:
                 from notifiers.telegram_notifier import send_telegram_message
-                send_telegram_message(f"✅ SISTEMA VERIFICADO: BUY {volume} {available_symbol} ejecutada - Ticket: {result.order} - El código está funcionando correctamente!")
+                send_telegram_message(f"✅ SISTEMA EXNESS VERIFICADO: BUY {volume} {available_symbol} ejecutada - Ticket: {result.order} - El sistema EXNESS está funcionando correctamente!")
             except Exception as e:
                 logging.debug(f"Error Telegram: {e}")
             
@@ -179,15 +179,15 @@ def execute_simple_trade():
 
 if __name__ == "__main__":
     logging.info("=" * 60)
-    logging.info("LIVE TEST TRADE - VERIFICACIÓN FINAL DEL SISTEMA")
+    logging.info("EXNESS TEST TRADE - VERIFICACIÓN FINAL DEL SISTEMA")
     logging.info("=" * 60)
     
     try:
         if execute_simple_trade():
-            logging.info("🎉 SISTEMA COMPLETAMENTE FUNCIONAL")
-            logging.info("   El código puede ejecutar operaciones reales exitosamente")
+            logging.info("🎉 SISTEMA EXNESS COMPLETAMENTE FUNCIONAL")
+            logging.info("   El sistema puede ejecutar operaciones EXNESS exitosamente")
         else:
-            logging.error("❌ Sistema con problemas - Revisar configuración")
+            logging.error("❌ Sistema EXNESS con problemas - Revisar configuración")
     except Exception as e:
         logging.error(f"Error crítico: {e}")
     finally:

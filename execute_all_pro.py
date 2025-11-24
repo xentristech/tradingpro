@@ -84,6 +84,114 @@ class AlgoTraderExecutorPro:
             }
         }
         
+    def play_start_greeting(self):
+        """Reproduce un saludo por voz opcional y muestra el texto.
+
+        Control:
+        - Configuración en config/start_greeting.txt (líneas a pronunciar/mostrar)
+        - Env ENABLE_TTS=1 para activar voz (Windows con PowerShell System.Speech)
+        """
+        try:
+            cfg = self.base_path / 'config' / 'start_greeting.txt'
+            lines = []
+            if cfg.exists():
+                with open(cfg, 'r', encoding='utf-8', errors='ignore') as f:
+                    for line in f:
+                        s = line.strip()
+                        if s:
+                            lines.append(s)
+            else:
+                lines = [
+                    'XENTRISTECH, Empresa de Tecnología.',
+                    'Sistema de trading iniciado y operativo.',
+                    'Bienvenido, operando en modo 24/7.'
+                ]
+
+            # Mostrar en consola
+            print("\n" + "="*60)
+            print("MENSAJE DE INICIO")
+            print("="*60)
+            for s in lines:
+                print(f"• {s}")
+
+            # Voz opcional en Windows
+            if os.getenv('ENABLE_TTS', '1') in ('1', 'true', 'True') and os.name == 'nt':
+                try:
+                    text = '. '.join(lines)
+                    safe = text.replace("'", "''")  # escapado simple para PowerShell
+                    cmd = [
+                        'powershell.exe', '-NoProfile', '-Command',
+                        (
+                            "Add-Type -AssemblyName System.Speech; "
+                            "$speak = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+                            f"$speak.Speak('{safe}')"
+                        )
+                    ]
+                    subprocess.Popen(cmd)
+                except Exception as e:
+                    self.logger.warning(f"No se pudo reproducir TTS: {e}")
+        except Exception as e:
+            self.logger.error(f"Error en saludo de inicio: {e}")
+
+    def _read_start_greeting_lines(self):
+        """Lee líneas del saludo configurable para reutilizar en Telegram."""
+        try:
+            cfg = self.base_path / 'config' / 'start_greeting.txt'
+            lines = []
+            if cfg.exists():
+                with open(cfg, 'r', encoding='utf-8', errors='ignore') as f:
+                    for line in f:
+                        s = line.strip()
+                        if s:
+                            lines.append(s)
+            else:
+                lines = [
+                    'XENTRISTECH, Empresa de Tecnología.',
+                    'Sistema de trading iniciado y operativo.',
+                    'Bienvenido, operando en modo 24/7.'
+                ]
+            return lines
+        except Exception:
+            return []
+
+    def open_custom_pages(self):
+        """Abre páginas web personalizadas desde config o variable de entorno.
+
+        - Lee la variable de entorno AUTO_OPEN_URLS (separadas por coma), o
+        - Lee el archivo config/auto_open_urls.txt (una URL por línea).
+        """
+        try:
+            urls = []
+            # 1) Variable de entorno
+            env_urls = os.getenv('AUTO_OPEN_URLS')
+            if env_urls:
+                urls = [u.strip() for u in env_urls.split(',') if u.strip()]
+            else:
+                # 2) Archivo de configuración
+                cfg = self.base_path / 'config' / 'auto_open_urls.txt'
+                if cfg.exists():
+                    with open(cfg, 'r', encoding='utf-8', errors='ignore') as f:
+                        for line in f:
+                            s = line.strip()
+                            if s and not s.startswith('#'):
+                                urls.append(s)
+
+            if not urls:
+                return
+
+            print("\n" + "="*60)
+            print("ABRIENDO PÁGINAS PERSONALIZADAS")
+            print("="*60 + "\n")
+            for url in urls:
+                try:
+                    print(f"  Abriendo: {url}")
+                    webbrowser.open(url)
+                    time.sleep(0.5)
+                except Exception as e:
+                    self.logger.warning(f"No se pudo abrir {url}: {e}")
+        except Exception as e:
+            self.logger.error(f"Error abriendo páginas personalizadas: {e}")
+
     def check_port(self, port):
         """Verifica si un puerto está disponible"""
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -229,6 +337,18 @@ class AlgoTraderExecutorPro:
             'chart_simulation',
             'tradingview_chart'
         ]
+
+        # Opcional: iniciar terminal MCP Trader 24/7 si existe y está habilitado
+        mcp_path = self.base_path / 'src/ui/mcp_trader_terminal.py'
+        if mcp_path.exists() and os.getenv('MCP_TRADER_ENABLE', '1') in ('1', 'true', 'True'):
+            self.services['mcp_trader_terminal'] = {
+                'file': 'src/ui/mcp_trader_terminal.py',
+                'name': '🖥 MCP Trader 24/7',
+                'process': None,
+                'status': 'stopped',
+                'critical': False
+            }
+            service_order.append('mcp_trader_terminal')
         
         success_count = 0
         
@@ -254,20 +374,27 @@ class AlgoTraderExecutorPro:
             
             notifier = TelegramNotifier()
             if notifier.is_active:
-                message = f"""
-🚀 <b>ALGO TRADER V3 INICIADO</b>
+                # Incluir saludo configurable si está habilitado
+                include_greeting = os.getenv('TELEGRAM_GREETING_ENABLE', '1') in ('1', 'true', 'True')
+                greeting = ''
+                if include_greeting:
+                    glines = self._read_start_greeting_lines()
+                    if glines:
+                        safe = [line.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') for line in glines]
+                        greeting = '\n'.join(safe) + '\n\n'
 
-✅ Servicios activos: {services_count}/6
-📊 Dashboards disponibles:
-  • http://localhost:8512
-  • http://localhost:8516
-  • http://localhost:8517
-
-🤖 Generador de señales: ACTIVO
-📱 Notificaciones: ACTIVAS
-
-⏰ {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-"""
+                message = (
+                    f"{greeting}"
+                    f"🚀 <b>ALGO TRADER V3 INICIADO</b>\n\n"
+                    f"✅ Servicios activos: {services_count}/6\n"
+                    f"📊 Dashboards disponibles:\n"
+                    f"  • http://localhost:8512\n"
+                    f"  • http://localhost:8516\n"
+                    f"  • http://localhost:8517\n\n"
+                    f"🤖 Generador de señales: ACTIVO\n"
+                    f"📱 Notificaciones: ACTIVAS\n\n"
+                    f"⏰ {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+                )
                 notifier.send_message(message, parse_mode='HTML')
         except Exception as e:
             self.logger.error(f"Error enviando notificación: {e}")
@@ -370,6 +497,10 @@ class AlgoTraderExecutorPro:
             
             # Abrir dashboards
             self.open_dashboards()
+            # Abrir páginas personalizadas
+            self.open_custom_pages()
+            # Saludo de inicio (voz + texto)
+            self.play_start_greeting()
             
             # Iniciar monitor en segundo plano
             monitor_thread = threading.Thread(target=self.monitor_services, daemon=True)
@@ -506,6 +637,13 @@ def main():
         if sys.argv[1] == '--auto':
             executor.start_all_services()
             executor.show_status()
+            # En modo auto, también abrir dashboards y páginas personalizadas
+            try:
+                executor.open_dashboards()
+                executor.open_custom_pages()
+                executor.play_start_greeting()
+            except Exception:
+                pass
             print("\n✅ Sistema iniciado. Presiona Enter para salir...")
             input()
         elif sys.argv[1] == '--stop':

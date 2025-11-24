@@ -7,6 +7,10 @@ import time
 import os
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv('configs/.env')
 
 def create_account_monitor_script(account_name, login, password, server, mt5_path):
     """Crea un script Python para monitorear una cuenta específica"""
@@ -72,28 +76,21 @@ if __name__ == "__main__":
 def main():
     print("""
     ╔════════════════════════════════════════════════════════════╗
-    ║     MULTI ACCOUNT MANAGER - PROCESOS SEPARADOS            ║
-    ║         Solución alternativa sin duplicación              ║
+    ║     EXNESS ACCOUNT MANAGER - PROCESOS SEPARADOS           ║
+    ║         Configurado para cuenta EXNESS únicamente         ║
     ╚════════════════════════════════════════════════════════════╝
     """)
     
     print(f"Fecha/Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
-    # Configuración de cuentas
+    # Configuración de cuentas - Solo EXNESS
     accounts = [
-        {
-            'name': 'AVA_REAL',
-            'login': 89390972,
-            'password': 'Naty1140855133$',
-            'server': 'Ava-Real 1-MT5',
-            'mt5_path': r'C:\Program Files\MetaTrader 5\terminal64.exe'
-        },
         {
             'name': 'EXNESS_TRIAL',
             'login': 197678662,
             'password': 'Badboy930218*',
             'server': 'Exness-MT5Trial11',
-            'mt5_path': r'C:\Program Files\MetaTrader 5 Exness\terminal64.exe'
+            'mt5_path': os.getenv('MT5_PATH', r'C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe')
         }
     ]
     

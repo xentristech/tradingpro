@@ -30,7 +30,7 @@ def main():
         
         # Crear instancia
         print("Creando generador con trading automatico...")
-        symbols = ['XAUUSD', 'EURUSD', 'GBPUSD', 'BTCUSDm']
+        symbols = ['XAUUSDm', 'EURUSDm', 'GBPUSDm', 'BTCUSDm']
         
         # Crear generador SIN auto_execute primero para evitar problemas
         generator = SignalGenerator(symbols=symbols, auto_execute=False)

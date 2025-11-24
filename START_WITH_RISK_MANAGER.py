@@ -23,7 +23,7 @@ def setup_environment():
     # Verificar que existe el archivo .env
     env_path = project_path / 'configs' / '.env'
     if not env_path.exists():
-        print("❌ No se encontró archivo de configuración")
+        print("ERROR: No se encontró archivo de configuración")
         print("   Ejecuta primero: python configurar_sistema.py")
         sys.exit(1)
         
@@ -36,7 +36,7 @@ def setup_environment():
     enable_trailing = os.getenv('ENABLE_TRAILING_STOP', 'false').lower() == 'true'
     
     if not enable_breakeven and not enable_trailing:
-        print("⚠️ Risk Manager desactivado en configuración")
+        print("WARNING: Risk Manager desactivado en configuración")
         print("   Para activarlo, edita configs/.env:")
         print("   ENABLE_BREAKEVEN=true")
         print("   ENABLE_TRAILING_STOP=true")
@@ -47,11 +47,11 @@ def run_risk_manager():
     """Ejecutar el Risk Manager en thread separado"""
     try:
         from src.risk.advanced_risk_manager import AdvancedRiskManager
-        print("✅ Iniciando Advanced Risk Manager...")
+        print("[OK] Iniciando Advanced Risk Manager...")
         manager = AdvancedRiskManager()
         manager.start()
     except Exception as e:
-        print(f"❌ Error en Risk Manager: {e}")
+        print(f"[ERROR] Error en Risk Manager: {e}")
 
 def run_trading_bot():
     """Ejecutar el bot de trading principal"""
@@ -60,12 +60,12 @@ def run_trading_bot():
         from src.signals.advanced_signal_generator import AdvancedSignalGenerator
         from src.broker.mt5_connection import MT5Connection
         
-        print("✅ Iniciando Bot de Trading...")
+        print("[OK] Iniciando Bot de Trading...")
         
         # Configurar componentes
         mt5_conn = MT5Connection()
         if not mt5_conn.connect():
-            print("❌ No se pudo conectar a MT5")
+            print("[ERROR] No se pudo conectar a MT5")
             return
             
         signal_gen = AdvancedSignalGenerator()
@@ -91,7 +91,7 @@ def run_trading_bot():
     except KeyboardInterrupt:
         print("\nBot de trading detenido")
     except Exception as e:
-        print(f"❌ Error en bot de trading: {e}")
+        print(f"[ERROR] Error en bot de trading: {e}")
 
 def main():
     """Función principal"""
@@ -111,13 +111,13 @@ def main():
         risk_thread = threading.Thread(target=run_risk_manager, daemon=True)
         risk_thread.start()
         threads.append(risk_thread)
-        print("✅ Risk Manager iniciado en background")
+        print("[OK] Risk Manager iniciado en background")
     
     # Thread para Bot de Trading
     bot_thread = threading.Thread(target=run_trading_bot, daemon=True)
     bot_thread.start()
     threads.append(bot_thread)
-    print("✅ Bot de Trading iniciado")
+    print("[OK] Bot de Trading iniciado")
     
     print("\n" + "="*60)
     print("Sistema ejecutándose. Presiona Ctrl+C para detener")
@@ -128,9 +128,9 @@ def main():
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("\n\n⏹️ Deteniendo sistema...")
+        print("\n\nDeteniendo sistema...")
         time.sleep(2)
-        print("✅ Sistema detenido correctamente")
+        print("[OK] Sistema detenido correctamente")
         sys.exit(0)
 
 if __name__ == "__main__":

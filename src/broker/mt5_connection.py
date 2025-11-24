@@ -86,7 +86,7 @@ class MT5Connection:
     def start_mt5_terminal(self):
         """Intenta abrir el terminal MT5 automáticamente"""
         try:
-            mt5_path = os.getenv("MT5_PATH", r"C:\Program Files\MetaTrader 5\terminal64.exe")
+            mt5_path = os.getenv("MT5_PATH", r"C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe")
             if os.path.exists(mt5_path):
                 logger.info(f"Abriendo MT5 terminal: {mt5_path}")
                 subprocess.Popen([mt5_path], shell=True)
@@ -129,9 +129,10 @@ class MT5Connection:
                 self.connected = False
                 return self.connect()
             
-            # Check 3: Verificar si podemos hacer una consulta básica
-            if mt5.last_error()[0] != 0:  # Error code 0 = success
-                logger.warning(f"MT5 error detected: {mt5.last_error()}, reconnecting...")
+            # Check 3: Verificar si hay errores reales (códigos > 1)
+            error_code = mt5.last_error()[0]
+            if error_code > 1:  # Error codes 0=success, 1=success con data, >1=real errors
+                logger.warning(f"MT5 real error detected: {mt5.last_error()}, reconnecting...")
                 self.connected = False
                 return self.connect()
                 

@@ -6,6 +6,10 @@ import MetaTrader5 as mt5
 import time
 from datetime import datetime
 import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv('configs/.env')
 
 def test_connection_detailed(account_name, login, password, server, mt5_path):
     """Prueba de conexión detallada con diagnóstico"""
@@ -118,33 +122,22 @@ def test_connection_detailed(account_name, login, password, server, mt5_path):
 def main():
     print("""
     ╔════════════════════════════════════════════════════════════╗
-    ║        DIAGNÓSTICO DETALLADO DE CONEXIÓN MT5              ║
-    ║              Detecta problemas de duplicación             ║
+    ║        DIAGNÓSTICO DETALLADO DE CONEXIÓN EXNESS         ║
+    ║                Configurado para cuenta EXNESS             ║
     ╚════════════════════════════════════════════════════════════╝
     """)
     
     print(f"Fecha/Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
-    # Configuración de cuentas
+    # Configuración de cuentas - Solo EXNESS
     accounts = [
-        {
-            'name': 'AVA_REAL',
-            'login': 89390972,
-            'password': 'Naty1140855133$',
-            'server': 'Ava-Real 1-MT5',
-            'paths_to_try': [
-                r'C:\Program Files\MetaTrader 5\terminal64.exe',
-                r'C:\Program Files\MetaTrader 5 AVA\terminal64.exe',
-                r'C:\Program Files\AVA MetaTrader 5\terminal64.exe',
-                r'C:\Program Files (x86)\MetaTrader 5\terminal64.exe'
-            ]
-        },
         {
             'name': 'EXNESS_TRIAL',
             'login': 197678662,
             'password': 'Badboy930218*',
             'server': 'Exness-MT5Trial11',
             'paths_to_try': [
+                os.getenv('MT5_PATH', r'C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe'),
                 r'C:\Program Files\MetaTrader 5 Exness\terminal64.exe',
                 r'C:\Program Files\Exness MetaTrader 5\terminal64.exe',
                 r'C:\Program Files\MetaTrader 5 - Exness\terminal64.exe',
@@ -172,8 +165,8 @@ def main():
         if not correct_path:
             print(f"\n⚠️ NO SE ENCONTRÓ MT5 PARA {account['name']}")
             print("Posibles soluciones:")
-            print("1. Instala MT5 desde el broker correspondiente")
-            print("2. Verifica la ruta de instalación")
+            print("1. Instala MT5 desde EXNESS")
+            print("2. Verifica la ruta de instalación en configs/.env (MT5_PATH)")
             continue
         
         # Probar conexión
@@ -200,35 +193,19 @@ def main():
     print("="*60)
     
     if len(results) == 0:
-        print("❌ No se pudo conectar a ninguna cuenta")
+        print("❌ No se pudo conectar a la cuenta")
         print("\nPOSIBLES CAUSAS:")
         print("1. MT5 no está instalado correctamente")
         print("2. Las rutas de instalación son incorrectas")
         print("3. Las credenciales son incorrectas")
         
-    elif len(results) == 1:
-        print(f"⚠️ Solo se conectó a una cuenta: {results[0]['name']}")
-        print("\nPROBLEMA:")
-        print("La otra cuenta no se puede conectar")
-        
     else:
-        # Verificar duplicación
-        if results[0]['actual'] == results[1]['actual']:
-            print("❌ DUPLICACIÓN DETECTADA!")
-            print(f"Ambas cuentas muestran login: {results[0]['actual']}")
-            print("\nCAUSA:")
-            print("MT5 no está cambiando entre cuentas correctamente")
-            print("\nSOLUCIONES:")
-            print("1. Usar instalaciones separadas de MT5 para cada broker")
-            print("2. Asegurarse de que cada MT5 está en una carpeta diferente")
-            print("3. Ejecutar cada cuenta en procesos separados")
-        else:
-            print("✅ NO HAY DUPLICACIÓN")
-            for r in results:
-                if r['expected'] == r['actual']:
-                    print(f"✅ {r['name']}: Login {r['actual']} correcto")
-                else:
-                    print(f"❌ {r['name']}: Esperaba {r['expected']}, obtuvo {r['actual']}")
+        print("✅ CONEXIÓN EXNESS EXITOSA")
+        for r in results:
+            if r['expected'] == r['actual']:
+                print(f"✅ {r['name']}: Login {r['actual']} correcto")
+            else:
+                print(f"❌ {r['name']}: Esperaba {r['expected']}, obtuvo {r['actual']}")
 
 if __name__ == "__main__":
     main()

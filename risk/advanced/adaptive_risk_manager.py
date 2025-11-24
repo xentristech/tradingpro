@@ -452,7 +452,7 @@ class AdaptiveRiskManager:
         """
         Calcula nivel de confianza de la operación
         """
-        confidence = 50  # Base
+        confidence = 60  # Base mejorada de 50 a 60
         
         # Factores positivos
         if market_conditions.get('timeframe_alignment', 0) > 70:

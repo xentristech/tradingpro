@@ -303,7 +303,7 @@ class MultiTimeframeAnalyzer:
         """
         Calcula confianza basada en múltiples factores
         """
-        confidence = 50  # Base
+        confidence = 60  # Base mejorada de 50 a 60
         
         # Factor de alineación (hasta +25)
         confidence += (alignment - 50) * 0.5

@@ -9,39 +9,20 @@ def simulate_account_check():
     
     print("""
     ╔══════════════════════════════════════════════════╗
-    ║     VERIFICADOR DE CUENTAS MULTI-MT5            ║
-    ║     Demostración del Fix - Sin MT5 Requerido    ║
+    ║     VERIFICADOR DE CUENTA EXNESS                 ║
+    ║     Demostración del Sistema - Sin MT5 Requerido ║
     ╚══════════════════════════════════════════════════╝
     """)
     
     print(f"Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
     
-    # Simular verificación de primera cuenta
+    # Simular verificación de cuenta EXNESS
     print("="*50)
-    print("Verificando: AVA_REAL")
-    print("="*50)
-    print("Simulando cierre de MT5...")
-    time.sleep(1)
-    print("Simulando reconexión con path: C:\\Program Files\\MetaTrader 5\\terminal64.exe")
-    print("Intentando login: 89390972 en Ava-Real 1-MT5")
-    time.sleep(1)
-    
-    print("✅ CONECTADO")
-    print("   Login actual: 89390972")
-    print("   Servidor: Ava-Real 1-MT5")
-    print("   Compañía: AvaTrade")
-    print("   Balance: $2,543.67")  # Datos simulados diferentes
-    print("   Equity: $2,498.23")
-    print("   Posiciones abiertas: 1")
-    print("   ⚠️ Posición #12345 (EURUSD) sin SL/TP")
-    
-    # Simular verificación de segunda cuenta
-    print("\n" + "="*50)
     print("Verificando: EXNESS_TRIAL")
     print("="*50)
-    print("Simulando cierre completo de MT5...")
+    print("Simulando inicialización MT5...")
     time.sleep(1)
-    print("Simulando reconexión con path: C:\\Program Files\\MetaTrader 5 Exness\\terminal64.exe")
+    print("Simulando conexión con path desde MT5_PATH (.env)")
     print("Intentando login: 197678662 en Exness-MT5Trial11")
     time.sleep(1)
     
@@ -59,22 +40,21 @@ def simulate_account_check():
     print("\n" + "="*50)
     print("RESUMEN FINAL")
     print("="*50)
-    print("Total cuentas verificadas: 2")
-    print("Total posiciones: 3")
-    print("Total problemas detectados: 3")
+    print("Total cuentas verificadas: 1 (EXNESS)")
+    print("Total posiciones: 2")
+    print("Total problemas detectados: 2")
     
-    print("\n✅ No se detectó duplicación de cuentas")
-    print("   AVA_REAL: Login 89390972")
+    print("\n✅ Sistema configurado solo para EXNESS")
     print("   EXNESS_TRIAL: Login 197678662")
-    print("\n✅ Cada cuenta muestra datos diferentes (SOLUCIONADO)")
+    print("\n✅ Configuración desde variables de entorno")
     
     print("\n" + "="*50)
-    print("\n📝 NOTA: Esta es una simulación para demostrar que el problema")
-    print("   de duplicación ha sido resuelto. En el código real:")
-    print("   1. Se cierra MT5 completamente entre cuentas")
-    print("   2. Se reconecta con paths específicos")
-    print("   3. Se verifica el login correcto")
-    print("   4. Se almacenan datos por separado")
+    print("\n📝 NOTA: Esta es una simulación para demostrar el sistema")
+    print("   configurado exclusivamente para EXNESS. En el código real:")
+    print("   1. Se conecta únicamente a EXNESS")
+    print("   2. Usa configuración desde variables de entorno")
+    print("   3. Previene múltiples instancias MT5")
+    print("   4. Optimizado para una sola cuenta")
 
 def main():
     """Función principal"""
@@ -82,10 +62,10 @@ def main():
         # Intentar importar MT5
         import MetaTrader5 as mt5
         print("✅ MetaTrader5 está instalado")
-        print("Ejecutando verificación simulada...\n")
+        print("Ejecutando simulación EXNESS...\n")
     except ImportError:
         print("⚠️ MetaTrader5 no está disponible")
-        print("Ejecutando simulación de demostración...\n")
+        print("Ejecutando simulación de demostración EXNESS...\n")
     
     simulate_account_check()
 

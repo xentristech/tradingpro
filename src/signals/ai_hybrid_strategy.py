@@ -53,9 +53,66 @@ class AIHybridStrategy:
         
         # Configuración
         self.timeframes = ["5min", "15min", "1h"]
-        self.confidence_threshold = 0.7
+        self.confidence_threshold = 0.30  # Reducido a 0.30 para detectar más oportunidades y testing
+        
+        # Cache de datos por timeframe para optimización
+        self.timeframe_cache = {
+            '5min': {'data': {}, 'last_update': None, 'last_datetime': None},
+            '15min': {'data': {}, 'last_update': None, 'last_datetime': None},
+            '30min': {'data': {}, 'last_update': None, 'last_datetime': None},
+            '1h': {'data': {}, 'last_update': None, 'last_datetime': None}
+        }
         
         self.initialize_clients()
+        
+    def should_update_timeframe(self, timeframe: str, current_time: datetime) -> bool:
+        """
+        Determina si debe actualizar los datos de un timeframe específico
+        basado en si ha cambiado la vela actual
+        """
+        minute = current_time.minute
+        
+        # Verificar si es momento de actualizar según el timeframe
+        if timeframe == "5min":
+            should_update = minute % 5 == 0
+        elif timeframe == "15min":
+            should_update = minute % 15 == 0
+        elif timeframe == "30min":
+            should_update = minute % 30 == 0
+        elif timeframe == "1h":
+            should_update = True  # Para 1h, siempre verificamos pero solo actualizamos si cambió
+        else:
+            should_update = True
+            
+        # Si no es momento de actualizar, usar cache
+        if not should_update:
+            return False
+            
+        # Verificar si realmente necesitamos actualizar comparando datetime
+        cache_entry = self.timeframe_cache.get(timeframe, {})
+        last_update = cache_entry.get('last_update')
+        
+        # Si nunca se ha actualizado, actualizar
+        if last_update is None:
+            return True
+            
+        # Para 1h, actualizar solo si ha pasado una hora completa
+        if timeframe == "1h":
+            hours_diff = (current_time - last_update).total_seconds() / 3600
+            return hours_diff >= 1.0
+            
+        # Para otros timeframes, actualizar si ha pasado el tiempo correspondiente
+        if timeframe == "30min":
+            minutes_diff = (current_time - last_update).total_seconds() / 60
+            return minutes_diff >= 30
+        elif timeframe == "15min":
+            minutes_diff = (current_time - last_update).total_seconds() / 60
+            return minutes_diff >= 15
+        elif timeframe == "5min":
+            minutes_diff = (current_time - last_update).total_seconds() / 60
+            return minutes_diff >= 5
+            
+        return True
         
     def initialize_clients(self):
         """Inicializa los clientes de IA y datos"""
@@ -63,24 +120,24 @@ class AIHybridStrategy:
             # Cliente Ollama
             self.ollama_client = crear_cliente_ollama()
             if self.ollama_client:
-                logger.info("✅ Ollama client iniciado")
+                logger.info("[OK] Ollama client iniciado")
             else:
-                logger.warning("⚠️ Ollama no disponible, usando análisis tradicional")
+                logger.warning("[WARNING] Ollama no disponible, usando análisis tradicional")
             
             # Cliente TwelveData
             self.twelvedata_client = TwelveDataClient()
             if self.twelvedata_client:
-                logger.info("✅ TwelveData client iniciado")
+                logger.info("[OK] TwelveData client iniciado")
             else:
-                logger.warning("⚠️ TwelveData no disponible")
+                logger.warning("[WARNING] TwelveData no disponible")
             
             # Telegram
             try:
                 self.telegram = TelegramNotifier()
                 if hasattr(self.telegram, 'is_active') and self.telegram.is_active:
-                    logger.info("✅ Telegram notifier activo")
+                    logger.info("[OK] Telegram notifier activo")
             except:
-                logger.warning("⚠️ Telegram notifier no disponible")
+                logger.warning("[WARNING] Telegram notifier no disponible")
                 
         except Exception as e:
             logger.error(f"Error inicializando clientes: {e}")
@@ -95,6 +152,7 @@ class AIHybridStrategy:
         """
         symbol_map = {
             'XAUUSD': 'XAU/USD',
+            'XAUUSDm': 'XAU/USD',  # Mapeo para símbolo MT5 oro
             'EURUSD': 'EUR/USD',
             'GBPUSD': 'GBP/USD',
             'BTCUSD': 'BTC/USD',
@@ -127,15 +185,15 @@ class AIHybridStrategy:
             analysis = self.twelvedata_client.get_complete_analysis(td_symbol)
             
             if analysis and analysis.get('price'):
-                logger.info(f"✅ Datos reales obtenidos: ${analysis['price']}")
+                logger.info(f"[OK] Datos reales obtenidos: ${analysis['price']}")
                 return analysis
             else:
-                logger.warning(f"⚠️ No se pudieron obtener datos reales para {symbol}")
+                logger.warning(f"[WARNING] No se pudieron obtener datos reales para {symbol}")
                 # Fallback: usar precio simulado para crypto si es necesario
                 if 'BTC' in symbol.upper():
                     import random
                     simulated_price = 108800 + random.uniform(-200, 200)
-                    logger.info(f"🔄 Usando precio simulado para {symbol}: ${simulated_price:.2f}")
+                    logger.info(f"[RELOAD] Usando precio simulado para {symbol}: ${simulated_price:.2f}")
                     return {
                         'price': simulated_price,
                         'volume': 1000000,
@@ -175,9 +233,9 @@ class AIHybridStrategy:
                     # Agregar precio actual
                     indicators['current_price'] = price_data
                     indicators_multi[tf] = indicators
-                    logger.info(f"✅ {tf}: {len(indicators)} indicadores obtenidos")
+                    logger.info(f"[OK] {tf}: {len(indicators)} indicadores obtenidos")
                 else:
-                    logger.warning(f"⚠️ {tf}: No se obtuvieron indicadores")
+                    logger.warning(f"[WARNING] {tf}: No se obtuvieron indicadores")
                     indicators_multi[tf] = {}
                 
                 # Pausa para evitar rate limiting
@@ -211,7 +269,7 @@ class AIHybridStrategy:
                 if df is not None and len(df) > 0:
                     closes = df['close'].tolist()
                     closes_multi[tf] = closes[:10]  # Solo últimos 10
-                    logger.info(f"✅ {tf}: {len(closes_multi[tf])} cierres obtenidos")
+                    logger.info(f"[OK] {tf}: {len(closes_multi[tf])} cierres obtenidos")
                 else:
                     closes_multi[tf] = []
                     
@@ -248,7 +306,7 @@ class AIHybridStrategy:
             }
         
         try:
-            logger.info(f"🤖 Analizando {symbol} con IA...")
+            logger.info(f"[AI] Analizando {symbol} con IA...")
             
             # Analizar con Ollama
             ai_analysis = self.ollama_client.analizar_mercado(
@@ -259,10 +317,10 @@ class AIHybridStrategy:
             )
             
             if ai_analysis and 'senal' in ai_analysis:
-                logger.info(f"✅ IA Analysis: {ai_analysis['senal']} (Confianza: {ai_analysis.get('confianza', 0):.1%})")
+                logger.info(f"[OK] IA Analysis: {ai_analysis['senal']} (Confianza: {ai_analysis.get('confianza', 0):.1%})")
                 return ai_analysis
             else:
-                logger.warning("⚠️ IA no devolvió análisis válido - NO OPERAR")
+                logger.warning("[WARNING] IA no devolvió análisis válido - NO OPERAR")
                 return {
                     'senal': 'NO_OPERAR',
                     'confianza': 0.0,
@@ -366,12 +424,12 @@ class AIHybridStrategy:
         
         try:
             self.analysis_count += 1
-            logger.info(f"🎯 AI Hybrid Analysis #{self.analysis_count} para {symbol}")
+            logger.info(f"[TARGET] AI Hybrid Analysis #{self.analysis_count} para {symbol}")
             
             # 1. Obtener datos reales de mercado
             market_data = self.get_real_market_data(symbol)
             if not market_data or not market_data.get('price'):
-                logger.warning(f"⚠️ Sin datos de mercado para {symbol} - NO GENERAR SEÑALES")
+                logger.warning(f"[WARNING] Sin datos de mercado para {symbol} - NO GENERAR SEÑALES")
                 return []  # RETORNAR VACIO - NO SIMULADOS
             
             current_price = market_data['price']
@@ -379,7 +437,7 @@ class AIHybridStrategy:
             # 2. Obtener indicadores multi-timeframe
             indicators_multi = self.get_multi_timeframe_indicators(symbol)
             if not indicators_multi:
-                logger.warning(f"⚠️ Sin indicadores para {symbol} - NO GENERAR SEÑALES")
+                logger.warning(f"[WARNING] Sin indicadores para {symbol} - NO GENERAR SEÑALES")
                 return []  # RETORNAR VACIO - NO SIMULADOS
             
             # 3. Obtener cierres históricos
@@ -390,20 +448,25 @@ class AIHybridStrategy:
                 symbol, indicators_multi, closes_multi, current_price
             )
             
-            # 5. Generar señal si cumple criterios
-            if (ai_analysis.get('senal') in ['BUY', 'SELL'] and 
+            # 5. Generar señal si cumple criterios (INCLUYENDO NO_OPERAR para testing)
+            if (ai_analysis.get('senal') in ['BUY', 'SELL', 'NO_OPERAR'] and 
                 ai_analysis.get('confianza', 0) >= self.confidence_threshold):
                 
-                # Calcular SL y TP básicos si no los tiene
-                if not ai_analysis.get('sl') or not ai_analysis.get('tp'):
-                    atr = indicators_multi.get('5min', {}).get('atr', current_price * 0.01)
-                    
-                    if ai_analysis['senal'] == 'BUY':
-                        ai_analysis['sl'] = current_price - (atr * 1.5)
-                        ai_analysis['tp'] = current_price + (atr * 2.5)
-                    else:
-                        ai_analysis['sl'] = current_price + (atr * 1.5)
-                        ai_analysis['tp'] = current_price - (atr * 2.5)
+                # Calcular SL y TP básicos solo para BUY/SELL
+                if ai_analysis['senal'] in ['BUY', 'SELL']:
+                    if not ai_analysis.get('sl') or not ai_analysis.get('tp'):
+                        atr = indicators_multi.get('5min', {}).get('atr', current_price * 0.01)
+                        
+                        if ai_analysis['senal'] == 'BUY':
+                            ai_analysis['sl'] = current_price - (atr * 1.5)
+                            ai_analysis['tp'] = current_price + (atr * 2.5)
+                        else:
+                            ai_analysis['sl'] = current_price + (atr * 1.5)
+                            ai_analysis['tp'] = current_price - (atr * 2.5)
+                else:
+                    # Para NO_OPERAR no necesitamos SL/TP
+                    ai_analysis['sl'] = None
+                    ai_analysis['tp'] = None
                 
                 # Crear señal
                 signal = {
@@ -423,7 +486,7 @@ class AIHybridStrategy:
                 signals.append(signal)
                 self.signals_generated += 1
                 
-                logger.info(f"✅ Señal IA generada: {symbol} {ai_analysis['senal']} (Fuerza: {signal['strength']:.1%})")
+                logger.info(f"[OK] Señal IA generada: {symbol} {ai_analysis['senal']} (Fuerza: {signal['strength']:.1%})")
                 
                 # Guardar último análisis
                 self.last_analysis[symbol] = ai_analysis
@@ -433,7 +496,7 @@ class AIHybridStrategy:
                     self.send_detailed_telegram_notification(signal)
             
             else:
-                logger.info(f"ℹ️ {symbol}: {ai_analysis.get('senal', 'NO_SIGNAL')} (Confianza: {ai_analysis.get('confianza', 0):.1%}) - No cumple umbral")
+                logger.info(f"[INFO] {symbol}: {ai_analysis.get('senal', 'NO_SIGNAL')} (Confianza: {ai_analysis.get('confianza', 0):.1%}) - No cumple umbral")
             
         except Exception as e:
             logger.error(f"Error generando señal IA para {symbol}: {e}")
@@ -450,27 +513,27 @@ class AIHybridStrategy:
             ai_analysis = signal.get('ai_analysis', {})
             
             message = f"""
-🤖 **SENAL IA HIBRIDHA** 🤖
+[AI] **SENAL IA HIBRIDHA** [AI]
 
-📊 **Simbolo:** {signal['symbol']}
-📈 **Tipo:** {signal['type']}
-💰 **Precio:** {signal['price']:.5f}
-💪 **Fuerza:** {signal['strength']*100:.0f}%
-🎯 **Stop Loss:** {signal.get('sl', 'N/A'):.5f}
-🎯 **Take Profit:** {signal.get('tp', 'N/A'):.5f}
+[CHART] **Simbolo:** {signal['symbol']}
+[TREND] **Tipo:** {signal['type']}
+[MONEY] **Precio:** {signal['price']:.5f}
+[STRENGTH] **Fuerza:** {signal['strength']*100:.0f}%
+[TARGET] **Stop Loss:** {signal.get('sl', 'N/A'):.5f}
+[TARGET] **Take Profit:** {signal.get('tp', 'N/A'):.5f}
 
-🧠 **IA Analysis:**
+[BRAIN] **IA Analysis:**
 {ai_analysis.get('razonamiento', 'Análisis con IA')}
 
-⚡ **Estrategia:** AI + Ollama + TwelveData
-📅 **Tiempo:** {signal['timestamp'].strftime('%H:%M:%S')}
+[BOLT] **Estrategia:** AI + Ollama + TwelveData
+[TIME] **Tiempo:** {signal['timestamp'].strftime('%H:%M:%S')}
 
-🚀 **Datos Reales:** TwelveData API
-🤖 **IA:** Ollama deepseek-r1:14b
+[ROCKET] **Datos Reales:** TwelveData API
+[AI] **IA:** Ollama deepseek-r1:14b
 """
             
             self.telegram.send_message(message)
-            logger.info(f"✅ Notificación IA enviada por Telegram")
+            logger.info(f"[OK] Notificación IA enviada por Telegram")
             
         except Exception as e:
             logger.error(f"Error enviando notificación IA: {e}")

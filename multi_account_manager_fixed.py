@@ -42,25 +42,16 @@ class MultiAccountManagerFixed:
         # Cargar configuración
         load_dotenv('configs/.env')
         
-        # CONFIGURACIÓN CORRECTA DE CUENTAS
+        # CONFIGURACIÓN SOLO EXNESS
         self.accounts = {
-            'ava_real': {
-                'login': 89390972,  # AVA REAL
-                'password': 'Naty1140855133$',  # Password AVA
-                'server': 'Ava-Real 1-MT5',  # Servidor AVA
-                'path': 'C:\\Program Files\\MetaTrader 5\\terminal64.exe',
+            'exness_trial': {
+                'login': int(os.getenv('MT5_LOGIN', 197678662)),  # EXNESS TRIAL
+                'password': os.getenv('MT5_PASSWORD', 'Badboy930218*'),  # Password Exness
+                'server': os.getenv('MT5_SERVER', 'Exness-MT5Trial11'),  # Servidor Exness
+                'path': os.getenv('MT5_PATH', 'C:\\Program Files\\MetaTrader 5 EXNESS\\terminal64.exe'),
                 'active': True,
                 'monitor_only': False,  # Puede hacer trading
                 'auto_trade': True
-            },
-            'exness_trial': {
-                'login': 197678662,  # EXNESS TRIAL
-                'password': 'Badboy930218*',  # Password Exness
-                'server': 'Exness-MT5Trial11',  # Servidor Exness
-                'path': 'C:\\Program Files\\MetaTrader 5 Exness\\terminal64.exe',
-                'active': True,
-                'monitor_only': True,  # Solo monitoreo
-                'auto_trade': False
             }
         }
         
@@ -75,7 +66,7 @@ class MultiAccountManagerFixed:
         self.running = False
         self.account_data = {}  # Almacenar datos de cada cuenta
         
-        logger.info("MultiAccountManager v3.2 inicializado con credenciales correctas")
+        logger.info("MultiAccountManager v3.2 inicializado para EXNESS únicamente")
     
     def _initialize_telegram(self):
         """Inicializa notificador de Telegram"""
@@ -212,8 +203,8 @@ class MultiAccountManagerFixed:
     async def start_monitoring(self):
         """Inicia el monitoreo de todas las cuentas"""
         logger.info("=" * 60)
-        logger.info("INICIANDO MULTI ACCOUNT MANAGER v3.2")
-        logger.info("Con credenciales correctas de AVA REAL")
+        logger.info("INICIANDO EXNESS ACCOUNT MANAGER v3.2")
+        logger.info("Configurado para cuenta EXNESS únicamente")
         logger.info("=" * 60)
         
         self.running = True
@@ -221,13 +212,12 @@ class MultiAccountManagerFixed:
         # Notificar inicio
         if self.telegram_notifier:
             await self.telegram_notifier.send_message(
-                "🏦 <b>MULTI ACCOUNT MANAGER v3.2</b>\n\n"
-                "✅ Monitoreando múltiples cuentas MT5\n"
-                "✅ AVA REAL: 89390972\n"
+                "🏦 <b>EXNESS ACCOUNT MANAGER v3.2</b>\n\n"
+                "✅ Monitoreando cuenta EXNESS MT5\n"
                 "✅ EXNESS TRIAL: 197678662\n"
-                "✅ Conexión independiente por cuenta\n"
+                "✅ Configurado desde variables de entorno\n"
                 "✅ Validación automática con IA\n\n"
-                "<i>Verificando conexiones...</i>"
+                "<i>Verificando conexión...</i>"
             )
         
         # Loop principal
@@ -298,7 +288,7 @@ class MultiAccountManagerFixed:
     def _print_summary(self, account_summary: List[Dict], total_positions: int, total_problems: int):
         """Imprime resumen en consola"""
         print("\n" + "="*60)
-        print("📊 RESUMEN MULTI-CUENTA v3.2")
+        print("📊 RESUMEN CUENTA EXNESS v3.2")
         print("="*60)
         print(f"\n📈 ESTADO GENERAL:")
         print(f"• Total posiciones: {total_positions}")
@@ -338,7 +328,7 @@ class MultiAccountManagerFixed:
         
         try:
             message = f"""
-🏦 <b>RESUMEN MULTI-CUENTA v3.2</b>
+🏦 <b>RESUMEN CUENTA EXNESS v3.2</b>
 
 📊 <b>ESTADO GENERAL:</b>
 • Total posiciones: {total_positions}
@@ -384,8 +374,8 @@ class MultiAccountManagerFixed:
         
         if self.telegram_notifier:
             await self.telegram_notifier.send_message(
-                "🛑 <b>MULTI ACCOUNT MANAGER DETENIDO</b>\n\n"
-                "<i>Monitoreo de cuentas desactivado</i>"
+                "🛑 <b>EXNESS ACCOUNT MANAGER DETENIDO</b>\n\n"
+                "<i>Monitoreo de cuenta desactivado</i>"
             )
         
         mt5.shutdown()
@@ -415,29 +405,25 @@ async def main():
 if __name__ == "__main__":
     print("""
     ============================================================
-    MULTI ACCOUNT MANAGER v3.2 - Gestor de Múltiples Cuentas
+    EXNESS ACCOUNT MANAGER v3.2 - Gestor de Cuenta EXNESS
     ============================================================
     
-    CREDENCIALES ACTUALIZADAS:
+    CREDENCIALES CONFIGURADAS:
     
-    AVA REAL:
-    - Login: 89390972
-    - Password: Naty1140855133$
-    - Servidor: Ava-Real 1-MT5
-    
-    EXNESS TRIAL:
+    EXNESS TRIAL (única cuenta activa):
     - Login: 197678662
-    - Password: Badboy930218*
+    - Password: ********* (desde .env)
     - Servidor: Exness-MT5Trial11
+    - Path: Configurado desde MT5_PATH
     
     CARACTERÍSTICAS:
-    - Conexión independiente para cada cuenta
-    - Sin duplicación de datos
-    - Verificación de cuenta correcta
-    - Monitoreo de múltiples cuentas MT5
+    - Conexión exclusiva a EXNESS
+    - Configuración desde variables de entorno
+    - Prevención de múltiples instancias MT5
+    - Monitoreo de cuenta EXNESS MT5
     - Validación automática con IA
     - Gestión inteligente de SL/TP
-    - Notificaciones consolidadas
+    - Notificaciones por Telegram
     
     ============================================================
     """)

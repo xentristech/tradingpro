@@ -17,13 +17,6 @@ class MonitoringDashboard:
     def __init__(self, port=8503):
         self.port = port
         self.accounts_config = {
-            'ava_real': {
-                'login': 89390972,
-                'server': 'Ava-Real 1-MT5',
-                'name': 'AVA TRADE',
-                'type': 'REAL',
-                'monitor_only': True
-            },
             'exness_trial': {
                 'login': 197678662,
                 'server': 'Exness-MT5Trial11',
@@ -38,15 +31,11 @@ class MonitoringDashboard:
         try:
             # Intentar conectar específicamente a la cuenta solicitada
             try:
-                # Obtener credenciales según la cuenta
-                if account_config['login'] == 89390972:
-                    # AVA Trade
-                    path = os.getenv('MT5_PATH_AVA', r"C:\Program Files\AVA TRADE LTD\MetaTrader 5\terminal64.exe")
-                    password = os.getenv('MT5_PASSWORD_AVA', '')
-                else:
-                    # Exness
-                    path = os.getenv('MT5_PATH_EXNESS', r"C:\Users\user\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\terminal64.exe")  
-                    password = os.getenv('MT5_PASSWORD_EXNESS', '')
+                # Obtener credenciales de Exness desde .env
+                from dotenv import load_dotenv
+                load_dotenv('configs/.env')
+                path = os.getenv('MT5_PATH', r"C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe")
+                password = os.getenv('MT5_PASSWORD', '')
                 
                 # Inicializar con la cuenta específica
                 if not mt5.initialize(path):

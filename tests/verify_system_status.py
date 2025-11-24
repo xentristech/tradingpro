@@ -11,7 +11,7 @@ def check_configuration():
     
     print("""
     ╔══════════════════════════════════════════════════════════╗
-    ║          VERIFICACIÓN DE SISTEMA MULTI-CUENTA             ║
+    ║          VERIFICACIÓN DE SISTEMA EXNESS                    ║
     ║                    Version 3.2                            ║
     ╚══════════════════════════════════════════════════════════╝
     """)
@@ -29,24 +29,16 @@ def check_configuration():
         with open('.env', 'r') as f:
             lines = f.readlines()
             
-        ava_login = None
         exness_login = None
         
         for line in lines:
-            if 'MT5_LOGIN_AVA=' in line:
-                ava_login = line.split('=')[1].strip()
-            elif 'MT5_LOGIN_EXNESS=' in line:
+            if 'MT5_LOGIN=' in line and 'MT5_LOGIN_AVA' not in line:
                 exness_login = line.split('=')[1].strip()
-        
-        if ava_login:
-            print(f"✅ AVA Login configurado: {ava_login}")
-        else:
-            print("❌ AVA Login no encontrado")
-            
+                
         if exness_login:
-            print(f"✅ Exness Login configurado: {exness_login}")
+            print(f"✅ EXNESS Login configurado: {exness_login}")
         else:
-            print("❌ Exness Login no encontrado")
+            print("❌ EXNESS Login no encontrado")
     else:
         print("❌ Archivo .env no encontrado")
     
@@ -71,20 +63,29 @@ def check_configuration():
     
     # Verificar paths de MT5
     print("\n" + "="*60)
-    print("3️⃣ VERIFICANDO INSTALACIONES DE MT5")
+    print("3️⃣ VERIFICANDO INSTALACIÓN DE MT5 EXNESS")
     print("="*60)
     
-    mt5_paths = {
-        'AVA MT5': r'C:\Program Files\MetaTrader 5\terminal64.exe',
-        'Exness MT5': r'C:\Program Files\MetaTrader 5 Exness\terminal64.exe'
-    }
+    from dotenv import load_dotenv
+    load_dotenv('configs/.env')
     
-    for name, path in mt5_paths.items():
-        if Path(path).exists():
-            print(f"✅ {name}: Encontrado en {path}")
-        else:
-            print(f"⚠️ {name}: No encontrado en {path}")
-            print(f"   Verifica la ruta de instalación")
+    mt5_path = os.getenv('MT5_PATH', r'C:\Program Files\MetaTrader 5 EXNESS\terminal64.exe')
+    
+    if Path(mt5_path).exists():
+        print(f"✅ EXNESS MT5: Encontrado en {mt5_path}")
+    else:
+        print(f"⚠️ EXNESS MT5: No encontrado en {mt5_path}")
+        print(f"   Verifica la ruta de instalación en configs/.env (MT5_PATH)")
+        
+        # Buscar rutas alternativas
+        alternative_paths = [
+            r'C:\Program Files\MetaTrader 5 Exness\terminal64.exe',
+            r'C:\Program Files\Exness MetaTrader 5\terminal64.exe'
+        ]
+        for alt_path in alternative_paths:
+            if Path(alt_path).exists():
+                print(f"✅ Alternativa encontrada: {alt_path}")
+                break
     
     # Verificar logs
     print("\n" + "="*60)
@@ -112,15 +113,11 @@ def check_configuration():
     print("5️⃣ CREDENCIALES CONFIGURADAS")
     print("="*60)
     
-    print("\n📊 AVA REAL (Cuenta Principal):")
-    print("   Login: 89390972")
-    print("   Password: Naty1140855133$ (configurada)")
-    print("   Servidor: Ava-Real 1-MT5")
-    
-    print("\n📊 EXNESS TRIAL (Cuenta Secundaria):")
+    print("\n📊 EXNESS TRIAL (Única cuenta configurada):")
     print("   Login: 197678662")
     print("   Password: ********* (configurada)")
     print("   Servidor: Exness-MT5Trial11")
+    print(f"   Path: {os.getenv('MT5_PATH', 'No configurado')}")
     
     # Estado del sistema
     print("\n" + "="*60)
@@ -151,20 +148,19 @@ def check_configuration():
     
     # Solución al problema de duplicación
     print("\n" + "="*60)
-    print("💡 SOLUCIÓN IMPLEMENTADA")
+    print("💡 CONFIGURACIÓN EXNESS")
     print("="*60)
-    print("""
-El sistema ha sido actualizado para prevenir la duplicación de datos:
+    print(f"""
+El sistema ha sido actualizado para usar únicamente EXNESS:
 
-1. ✅ Cierre completo de MT5 entre cuentas
-2. ✅ Reconexión con paths específicos
-3. ✅ Verificación de login correcto
-4. ✅ Almacenamiento separado de datos
+1. ✅ Conexión exclusiva a EXNESS
+2. ✅ Path configurado desde variables de entorno
+3. ✅ Eliminadas referencias a otras cuentas
+4. ✅ Prevención de múltiples instancias MT5
 
-ANTES: Ambas cuentas mostraban login 197678662
-AHORA: Cada cuenta muestra su login correcto
-       - AVA: 89390972
-       - Exness: 197678662
+CONFIGURACIÓN ACTUAL:
+       - EXNESS: 197678662 (única cuenta activa)
+       - Path: {os.getenv('MT5_PATH', 'No configurado')}
     """)
     
     print("="*60)

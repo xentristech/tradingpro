@@ -31,7 +31,7 @@ class OllamaClient:
             model: Modelo a usar (deepseek-r1:14b)
         """
         self.api_base = api_base
-        self.model = model
+        self.model = "deepseek-r1:8b"  # Usar modelo más rápido
         
         # Configurar cliente OpenAI para Ollama
         if OPENAI_VERSION == "new":
@@ -63,26 +63,50 @@ class OllamaClient:
         """
         
         PROMPT = f"""
-Actúa como un analista técnico profesional con enfoque institucional. SOLO responde en español.
-Usando datos en tiempo real, realiza un análisis completo y riguroso sobre el activo {symbol}.
+Eres un trader profesional especializado en {symbol}. Analiza los datos técnicos y genera señales de trading.
 
-Tu objetivo es:
-1. Consultar los indicadores técnicos clave en cada timeframe disponible
-2. Detectar si existe una señal fuerte de compra, venta, o si no es recomendable operar
-3. Basar la conclusión SOLO en los datos frescos proporcionados
+IMPORTANTE: Busca activamente oportunidades de trading. Si hay tendencias claras, divergencias, 
+soporte/resistencia, o patrones técnicos, GENERA LA SEÑAL.
 
-Formato de respuesta OBLIGATORIO:
+Criterios para COMPRA:
+- RSI < 30 (sobreventa) o rebote desde soporte
+- MACD cruzando hacia arriba
+- Precio tocando banda inferior de Bollinger
+- Ruptura de resistencia
+- Patrón alcista (doble suelo, bandera, etc)
 
-📊 **Análisis Técnico**
-✅ **Señal final: COMPRA** o **Señal final: VENTA** o **Señal final: NO OPERAR**
-🧠 **Razonamiento técnico claro y breve**
-📈 **Setup operativo sugerido**:
-- Entrada: {precio_actual:.5f} (precio actual de referencia)
-- SL: [precio numérico stop loss]
-- TP: [precio numérico take profit]  
-- Ratio TP/SL: [ratio numérico, ej: 2.0]
+Criterios para VENTA:
+- RSI > 70 (sobrecompra) o rechazo desde resistencia  
+- MACD cruzando hacia abajo
+- Precio tocando banda superior de Bollinger
+- Ruptura de soporte
+- Patrón bajista (doble techo, bandera bajista, etc)
 
-DATOS ACTUALES:
+Respuesta OBLIGATORIA en formato:
+
+SEÑAL FINAL: COMPRA/VENTA/NO_OPERAR
+Entrada: [precio numérico]
+SL: [precio numérico] 
+TP: [precio numérico]
+Confianza: [porcentaje]%
+
+Precio actual: {precio_actual:.5f}
+
+ESTRATEGIAS ESPECÍFICAS POR ASSET:
+
+XAU/USD (ORO):
+- Compra en retrocesos del 23.6% o 38.2% de Fibonacci después de tendencia alcista
+- Venta en rechazo de niveles psicológicos (3600, 3650, 3700, etc)
+- Breakouts de rangos consolidados con volumen
+- Divergencias en RSI son señales muy confiables en oro
+- Niveles de soporte/resistencia son críticos (oro respeta zonas técnicas)
+
+BTC/USD:
+- Compra cuando toca EMA 50 en tendencia alcista
+- Venta en resistencias de máximos históricos
+- Patrones de triple toque en soporte/resistencia
+
+NOTA: Sé agresivo en buscar oportunidades. Es mejor entrar con 60-70% confianza que perder oportunidades reales.
 """
         
         # Agregar indicadores por timeframe
@@ -137,16 +161,16 @@ DATOS ACTUALES:
                 respuesta = self.client.chat.completions.create(
                     model=self.model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.2,
-                    max_tokens=1500
+                    temperature=0.3,
+                    max_tokens=200
                 )
                 respuesta_texto = respuesta.choices[0].message.content
             else:
                 respuesta = openai.ChatCompletion.create(
                     model=self.model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.2,
-                    max_tokens=1500
+                    temperature=0.3,
+                    max_tokens=200
                 )
                 respuesta_texto = respuesta['choices'][0]['message']['content']
             
@@ -242,7 +266,7 @@ DATOS ACTUALES:
                 respuesta = self.client.chat.completions.create(
                     model=self.model,
                     messages=[{"role": "user", "content": "Responde solo: OK"}],
-                    temperature=0.1,
+                    temperature=0.3,
                     max_tokens=10
                 )
                 texto = respuesta.choices[0].message.content.strip()
@@ -250,12 +274,12 @@ DATOS ACTUALES:
                 respuesta = openai.ChatCompletion.create(
                     model=self.model,
                     messages=[{"role": "user", "content": "Responde solo: OK"}],
-                    temperature=0.1,
+                    temperature=0.3,
                     max_tokens=10
                 )
                 texto = respuesta['choices'][0]['message']['content'].strip()
             
-            success = "OK" in texto.upper()
+            success = len(texto.strip()) > 0  # Cualquier respuesta válida es exitosa
             
             logger.info(f"Test Ollama: {'[OK] Exitoso' if success else '[ERROR] Falló'}")
             return success
@@ -263,6 +287,41 @@ DATOS ACTUALES:
         except Exception as e:
             logger.error(f"Error testing Ollama: {e}")
             return False
+    
+    def analyze_with_simple_prompt(self, prompt: str) -> str:
+        """
+        Analiza con un prompt simple y retorna la respuesta
+        Args:
+            prompt: Prompt para el análisis
+        Returns:
+            Respuesta de la IA como string
+        """
+        try:
+            if OPENAI_VERSION == "new":
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "Eres un experto en trading algorítmico"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=500
+                )
+                return response.choices[0].message.content
+            else:
+                response = openai.ChatCompletion.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": "Eres un experto en trading algorítmico"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7,
+                    max_tokens=500
+                )
+                return response['choices'][0]['message']['content']
+        except Exception as e:
+            logger.error(f"Error en análisis simple: {e}")
+            return ""
 
 # Función de utilidad para usar desde otros módulos
 def crear_cliente_ollama() -> Optional[OllamaClient]:

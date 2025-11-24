@@ -1,0 +1,55 @@
+# Dependencias adicionales para el Diario de Trading y Gestión de Riesgo
+# Instalar con: pip install -r requirements_journal.txt
+
+# Dashboard y visualización
+streamlit>=1.28.0
+plotly>=5.15.0
+dash>=2.14.0
+
+# Análisis de datos mejorado
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Google Sheets integration
+gspread>=5.10.0
+google-auth>=2.22.0
+
+# Machine Learning para patrones
+xgboost>=1.7.0
+lightgbm>=4.0.0
+
+# Utilidades adicionales
+dataclasses-json>=0.6.0
+python-dotenv>=1.0.0
+
+# Estadísticas avanzadas
+statsmodels>=0.14.0
+quantlib-python>=1.31  # Para métricas financieras avanzadas
+
+# Alertas y sonido (Windows)
+playsound>=1.3.0  # Alternativa a winsound para multiplataforma
+
+# Opcional: Base de datos mejorada
+sqlalchemy>=2.0.0
+sqlite3  # Incluido en Python
+
+# Análisis técnico adicional
+ta>=0.10.2  # Technical Analysis Library
+talib-binary>=0.4.24  # TA-Lib binarios pre-compilados
+
+# Notificaciones desktop (opcional)
+plyer>=2.1.0  # Para notificaciones del sistema
+
+# Formato de datos avanzado
+pyarrow>=13.0.0  # Para parquet files, más eficiente que CSV
+
+# Logging avanzado
+colorlog>=6.7.0  # Logs con colores
+
+# Timezone handling
+pytz>=2023.3
+
+# JSON avanzado
+orjson>=3.9.0  # JSON más rápido que el estándar

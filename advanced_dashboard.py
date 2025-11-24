@@ -12,6 +12,10 @@ import MetaTrader5 as mt5
 import asyncio
 import json
 import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno
+load_dotenv('configs/.env')
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -25,7 +29,7 @@ load_dotenv('configs/.env')
 
 # Configurar página
 st.set_page_config(
-    page_title="AlgoTrader Advanced Dashboard",
+    page_title="EXNESS Trading Dashboard",
     page_icon="🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -91,15 +95,17 @@ class AdvancedDashboard:
     
     def __init__(self):
         self.accounts_config = {
-            'Ava Real': {'login': 89390972, 'server': 'Ava-Real 1-MT5'},
-            'Exness Trial': {'login': 197678662, 'server': 'Exness-MT5Trial11'}
+            'Exness Trial': {
+                'login': int(os.getenv('MT5_LOGIN', 197678662)), 
+                'server': os.getenv('MT5_SERVER', 'Exness-MT5Trial11')
+            }
         }
         self.refresh_interval = 30  # segundos
         
     def run(self):
         """Ejecuta el dashboard principal"""
         # Header principal
-        st.markdown('<div class="main-header">🚀 AlgoTrader Advanced Dashboard v3.0</div>', 
+        st.markdown('<div class="main-header">🚀 EXNESS Trading Dashboard v3.0</div>', 
                    unsafe_allow_html=True)
         
         # Sidebar
