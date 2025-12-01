@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "twelvedata": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-twelve-data@latest",
+        "-k",
+        "23d17ce5b7044ad5aef9766770a6252b"
+      ]
+    }
+  }
+}
